@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var characterViewModel = CharacterViewModel()
     @StateObject private var sharePlayService = SharePlayService()
     @State private var showOnboarding = true
+    @State private var showSettings = false
 
     var body: some View {
         ZStack {
@@ -30,17 +31,34 @@ struct ContentView: View {
 
                     Spacer()
 
-                    if sharePlayService.isActive {
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(.green)
-                            .padding(8)
-                            .background(Color.white.opacity(0.9))
-                            .clipShape(Circle())
+                    HStack(spacing: 12) {
+                        if sharePlayService.isActive {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(.green)
+                                .padding(8)
+                                .background(Color.white.opacity(0.9))
+                                .clipShape(Circle())
+                        }
+
+                        Button {
+                            HapticManager.shared.trigger(.light)
+                            showSettings = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundColor(.white)
+                                .padding(8)
+                                .background(Color.black.opacity(0.3))
+                                .clipShape(Circle())
+                        }
                     }
                 }
                 .padding()
 
                 Spacer()
+
+                // Character picker
+                CharacterPickerView(viewModel: characterViewModel)
+                    .padding(.bottom, 12)
 
                 // Action buttons
                 ActionButtonsView(viewModel: characterViewModel)
@@ -49,6 +67,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView(isPresented: $showOnboarding)
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 }
