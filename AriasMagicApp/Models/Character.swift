@@ -35,6 +35,9 @@ class Character: Identifiable, ObservableObject {
 
     var entity: ModelEntity?
 
+    // Track pending animations for cancellation
+    private var pendingWorkItems: [DispatchWorkItem] = []
+
     init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: SIMD3<Float> = [1, 1, 1]) {
         self.id = id
         self.type = type
@@ -43,6 +46,17 @@ class Character: Identifiable, ObservableObject {
         self.currentAction = .idle
 
         createEntity()
+    }
+
+    deinit {
+        // Cancel all pending animations to prevent memory leaks
+        cancelAllAnimations()
+    }
+
+    /// Cancels all pending animation work items
+    func cancelAllAnimations() {
+        pendingWorkItems.forEach { $0.cancel() }
+        pendingWorkItems.removeAll()
     }
 
     private func createEntity() {
@@ -96,10 +110,14 @@ class Character: Identifiable, ObservableObject {
             transform.translation.y += 0.1
             entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let workItem = DispatchWorkItem { [weak self, weak entity] in
+                guard let self = self, let entity = entity else { return }
+                var transform = entity.transform
                 transform.translation.y -= 0.1
                 entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
 
         case .twirl:
             // Full rotation
@@ -112,10 +130,14 @@ class Character: Identifiable, ObservableObject {
             transform.translation.y += 0.2
             entity.move(to: transform, relativeTo: entity.parent, duration: 0.4)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            let workItem = DispatchWorkItem { [weak self, weak entity] in
+                guard let self = self, let entity = entity else { return }
+                var transform = entity.transform
                 transform.translation.y -= 0.2
                 entity.move(to: transform, relativeTo: entity.parent, duration: 0.4)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: workItem)
 
         case .sparkle:
             // Scale pulse
@@ -123,15 +145,22 @@ class Character: Identifiable, ObservableObject {
             transform.scale = [1.2, 1.2, 1.2]
             entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let workItem = DispatchWorkItem { [weak self, weak entity] in
+                guard let self = self, let entity = entity else { return }
+                var transform = entity.transform
                 transform.scale = [1, 1, 1]
                 entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
         }
 
         // Reset to idle after animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        let idleWorkItem = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
             self.currentAction = .idle
         }
+        pendingWorkItems.append(idleWorkItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: idleWorkItem)
     }
 }
