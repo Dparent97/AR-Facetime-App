@@ -32,11 +32,17 @@ class FaceTrackingService {
     private var lastMouthOpenTime: Date?
     private let debounceInterval: TimeInterval = 1.0
 
+    // Tracking state
+    private var isTrackingActive: Bool = true
+
     init(delegate: FaceTrackingDelegate? = nil) {
         self.delegate = delegate
     }
 
     func processFaceAnchor(_ faceAnchor: ARFaceAnchor) {
+        // Don't process if tracking is paused
+        guard isTrackingActive else { return }
+
         // Check for smile
         if let leftSmile = faceAnchor.blendShapes[.mouthSmileLeft] as? Float,
            let rightSmile = faceAnchor.blendShapes[.mouthSmileRight] as? Float {
@@ -78,6 +84,16 @@ class FaceTrackingService {
         DispatchQueue.main.async {
             self.delegate?.didDetectExpression(expression)
         }
+    }
+
+    // MARK: - Lifecycle Management
+
+    func pauseTracking() {
+        isTrackingActive = false
+    }
+
+    func resumeTracking() {
+        isTrackingActive = true
     }
 }
 

@@ -11,6 +11,7 @@ import ARKit
 
 struct MagicARView: UIViewRepresentable {
     @ObservedObject var viewModel: CharacterViewModel
+    var isActive: Bool = true  // Control AR session state
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
@@ -55,6 +56,18 @@ struct MagicARView: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {
         // Update characters in scene based on view model
         context.coordinator.updateCharacters()
+
+        // Handle AR session lifecycle based on isActive state
+        if isActive {
+            context.coordinator.resumeARSession()
+        } else {
+            context.coordinator.pauseARSession()
+        }
+    }
+
+    static func dismantleUIView(_ uiView: ARView, coordinator: Coordinator) {
+        // Stop AR session when view is removed
+        coordinator.stopARSession()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -72,6 +85,13 @@ struct MagicARView: UIViewRepresentable {
             self.viewModel = viewModel
             super.init()
             self.faceTrackingService = FaceTrackingService(delegate: self)
+        }
+
+        deinit {
+            // Clean up AR session and resources
+            stopARSession()
+            arView?.session.delegate = nil
+            faceTrackingService = nil
         }
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -138,6 +158,41 @@ struct MagicARView: UIViewRepresentable {
                     faceTrackingService?.processFaceAnchor(faceAnchor)
                 }
             }
+        }
+
+        // MARK: - AR Session Lifecycle Management
+
+        func pauseARSession() {
+            guard let arView = arView else { return }
+            // Pause the AR session to conserve battery
+            arView.session.pause()
+            // Pause face tracking
+            faceTrackingService?.pauseTracking()
+        }
+
+        func resumeARSession() {
+            guard let arView = arView else { return }
+            // Configure and run AR session
+            let configuration = ARFaceTrackingConfiguration()
+            if ARFaceTrackingConfiguration.isSupported {
+                configuration.isWorldTrackingEnabled = true
+                arView.session.run(configuration)
+            } else {
+                // Fallback to world tracking without face tracking
+                let worldConfig = ARWorldTrackingConfiguration()
+                worldConfig.planeDetection = [.horizontal]
+                arView.session.run(worldConfig)
+            }
+            // Resume face tracking
+            faceTrackingService?.resumeTracking()
+        }
+
+        func stopARSession() {
+            guard let arView = arView else { return }
+            // Completely stop the AR session
+            arView.session.pause()
+            // Stop face tracking
+            faceTrackingService?.pauseTracking()
         }
     }
 }
