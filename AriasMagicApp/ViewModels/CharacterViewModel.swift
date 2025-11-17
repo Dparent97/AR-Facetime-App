@@ -13,12 +13,24 @@ class CharacterViewModel: ObservableObject {
     @Published var characters: [Character] = []
     @Published var selectedCharacterType: CharacterType = .sparkleThePrincess
     @Published var activeEffect: MagicEffect?
+    @Published var currentError: ErrorState?
 
     private var cancellables = Set<AnyCancellable>()
 
     init() {
         // Start with one default character
         spawnCharacter(at: [0, 0, -0.5])
+    }
+
+    func handleError(_ error: AppError) {
+        DispatchQueue.main.async {
+            self.currentError = ErrorState(error: error)
+            ErrorLoggingService.shared.logError(error)
+        }
+    }
+
+    func dismissError() {
+        currentError = nil
     }
 
     func spawnCharacter(at position: SIMD3<Float>) {

@@ -12,20 +12,18 @@ import ARKit
 struct MagicARView: UIViewRepresentable {
     @ObservedObject var viewModel: CharacterViewModel
     var isActive: Bool = true  // Control AR session state
+    var onError: ((AppError) -> Void)?
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
 
-        // Configure AR session for face tracking
-        let configuration = ARFaceTrackingConfiguration()
-        if ARFaceTrackingConfiguration.isSupported {
-            configuration.isWorldTrackingEnabled = true
-            arView.session.run(configuration)
-        } else {
-            // Fallback to world tracking without face tracking
-            let worldConfig = ARWorldTrackingConfiguration()
-            worldConfig.planeDetection = [.horizontal]
-            arView.session.run(worldConfig)
+        // Configure AR session with error handling
+        do {
+            try context.coordinator.configureARSession(arView)
+        } catch let error as AppError {
+            context.coordinator.handleError(error)
+        } catch {
+            context.coordinator.handleError(.arConfigurationFailed(error.localizedDescription))
         }
 
         // Set up gesture recognizers
@@ -71,7 +69,7 @@ struct MagicARView: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel)
+        Coordinator(viewModel: viewModel, onError: onError)
     }
 
     class Coordinator: NSObject, ARSessionDelegate {
@@ -80,11 +78,74 @@ struct MagicARView: UIViewRepresentable {
         var mainAnchor: AnchorEntity?
         var selectedEntity: ModelEntity?
         var faceTrackingService: FaceTrackingService?
+        var onError: ((AppError) -> Void)?
+        var arCapabilities: ARCapabilities = .none
 
-        init(viewModel: CharacterViewModel) {
+        init(viewModel: CharacterViewModel, onError: ((AppError) -> Void)? = nil) {
             self.viewModel = viewModel
+            self.onError = onError
             super.init()
-            self.faceTrackingService = FaceTrackingService(delegate: self)
+        }
+
+        func configureARSession(_ arView: ARView) throws {
+            // Check AR support
+            guard ARWorldTrackingConfiguration.isSupported else {
+                arCapabilities = .none
+                let error = AppError.arNotSupported
+                ErrorLoggingService.shared.logError(error)
+                handleError(error)
+                throw error
+            }
+
+            // Try face tracking first
+            if ARFaceTrackingConfiguration.isSupported {
+                let configuration = ARFaceTrackingConfiguration()
+                configuration.isWorldTrackingEnabled = true
+
+                do {
+                    arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+                    arCapabilities = .faceTracking
+
+                    // Initialize face tracking service
+                    self.faceTrackingService = FaceTrackingService(delegate: self)
+
+                    ErrorLoggingService.shared.logger.info("AR session configured with face tracking")
+                } catch {
+                    // Face tracking failed, fallback to world tracking
+                    ErrorLoggingService.shared.logSwiftError(error, context: "Face tracking configuration failed, falling back to world tracking")
+                    try configureWorldTracking(arView)
+                }
+            } else {
+                // Face tracking not supported, use world tracking
+                let warning = AppError.faceTrackingNotAvailable
+                ErrorLoggingService.shared.logError(warning)
+                handleError(warning)
+                try configureWorldTracking(arView)
+            }
+        }
+
+        private func configureWorldTracking(_ arView: ARView) throws {
+            let worldConfig = ARWorldTrackingConfiguration()
+            worldConfig.planeDetection = [.horizontal, .vertical]
+            worldConfig.environmentTexturing = .automatic
+
+            do {
+                arView.session.run(worldConfig, options: [.resetTracking, .removeExistingAnchors])
+                arCapabilities = .worldTracking
+                ErrorLoggingService.shared.logger.info("AR session configured with world tracking")
+            } catch {
+                arCapabilities = .none
+                let appError = AppError.arSessionFailed(error.localizedDescription)
+                ErrorLoggingService.shared.logError(appError)
+                throw appError
+            }
+        }
+
+        func handleError(_ error: AppError) {
+            DispatchQueue.main.async {
+                self.onError?(error)
+                self.viewModel.handleError(error)
+            }
         }
 
         deinit {
@@ -151,7 +212,8 @@ struct MagicARView: UIViewRepresentable {
             }
         }
 
-        // ARSessionDelegate
+        // MARK: - ARSessionDelegate
+
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
                 if let faceAnchor = anchor as? ARFaceAnchor {
@@ -160,6 +222,7 @@ struct MagicARView: UIViewRepresentable {
             }
         }
 
+<<<<<<< HEAD
         // MARK: - AR Session Lifecycle Management
 
         func pauseARSession() {
@@ -193,11 +256,62 @@ struct MagicARView: UIViewRepresentable {
             arView.session.pause()
             // Stop face tracking
             faceTrackingService?.pauseTracking()
+=======
+        func session(_ session: ARSession, didFailWithError error: Error) {
+            let appError = AppError.arSessionFailed(error.localizedDescription)
+            ErrorLoggingService.shared.logError(appError)
+            handleError(appError)
+
+            // Attempt to restart session
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                guard let self = self, let arView = self.arView else { return }
+                do {
+                    try self.configureARSession(arView)
+                } catch {
+                    ErrorLoggingService.shared.logSwiftError(error, context: "AR session restart failed")
+                }
+            }
+        }
+
+        func sessionWasInterrupted(_ session: ARSession) {
+            ErrorLoggingService.shared.logger.warning("AR session was interrupted")
+        }
+
+        func sessionInterruptionEnded(_ session: ARSession) {
+            ErrorLoggingService.shared.logger.info("AR session interruption ended, attempting to restart")
+
+            guard let arView = arView else { return }
+            do {
+                try configureARSession(arView)
+            } catch {
+                ErrorLoggingService.shared.logSwiftError(error, context: "AR session restart after interruption failed")
+            }
+>>>>>>> origin/claude/add-error-handling-01XtWuS2ccmTeqYz8cML95vW
         }
     }
 }
 
-// Extension to extract position from transform
+// MARK: - AR Capabilities
+
+enum ARCapabilities {
+    case none
+    case worldTracking
+    case faceTracking
+
+    var displayName: String {
+        switch self {
+        case .none:
+            return "No AR"
+        case .worldTracking:
+            return "AR (World Tracking)"
+        case .faceTracking:
+            return "AR (Face Tracking)"
+        }
+    }
+}
+
+// MARK: - Extensions
+
 extension simd_float4x4 {
     var position: SIMD3<Float> {
         return SIMD3<Float>(columns.3.x, columns.3.y, columns.3.z)
