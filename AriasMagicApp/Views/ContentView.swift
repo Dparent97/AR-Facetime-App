@@ -12,6 +12,11 @@ struct ContentView: View {
     @StateObject private var sharePlayService = SharePlayService()
     @State private var showOnboarding = true
 
+    init() {
+        // Note: We can't configure here because StateObject hasn't been initialized yet
+        // We'll do it in onAppear
+    }
+
     var body: some View {
         ZStack {
             // AR View (main background)
@@ -49,6 +54,10 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView(isPresented: $showOnboarding)
+        }
+        .onAppear {
+            // Connect SharePlayService and CharacterViewModel
+            characterViewModel.configure(with: sharePlayService)
         }
     }
 }

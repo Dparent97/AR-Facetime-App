@@ -8,7 +8,7 @@
 import Foundation
 import RealityKit
 
-enum MagicEffect: String, CaseIterable {
+enum MagicEffect: String, CaseIterable, Codable {
     case sparkles
     case snow
     case bubbles
