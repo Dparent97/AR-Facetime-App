@@ -40,11 +40,13 @@ struct SyncMessage: Codable {
 class SharePlayService: ObservableObject {
     @Published var isActive = false
     @Published var participants: [Participant] = []
+    @Published var lastError: AppError?
 
     private var activity: MagicARActivity?
     private var session: GroupSession<MagicARActivity>?
     private var messenger: GroupSessionMessenger?
     private var cancellables = Set<AnyCancellable>()
+    var onError: ((AppError) -> Void)?
 
     init() {
         setupGroupSession()
@@ -63,17 +65,42 @@ class SharePlayService: ObservableObject {
             let activity = MagicARActivity()
             self.activity = activity
 
-            switch await activity.prepareForActivation() {
-            case .activationPreferred:
-                try? await activity.activate()
-            case .activationDisabled:
-                print("SharePlay activation disabled")
-            case .cancelled:
-                print("SharePlay cancelled")
-            @unknown default:
-                break
+            do {
+                let result = await activity.prepareForActivation()
+
+                switch result {
+                case .activationPreferred:
+                    do {
+                        try await activity.activate()
+                        ErrorLoggingService.shared.logger.info("SharePlay activated successfully")
+                    } catch {
+                        let appError = AppError.sharePlayActivationFailed("Activation failed: \(error.localizedDescription)")
+                        ErrorLoggingService.shared.logError(appError)
+                        await handleError(appError)
+                    }
+
+                case .activationDisabled:
+                    let appError = AppError.sharePlayNotAvailable
+                    ErrorLoggingService.shared.logError(appError)
+                    await handleError(appError)
+
+                case .cancelled:
+                    ErrorLoggingService.shared.logger.info("SharePlay activation cancelled by user")
+                    // Not an error, just user cancellation
+
+                @unknown default:
+                    let appError = AppError.sharePlayActivationFailed("Unknown activation result")
+                    ErrorLoggingService.shared.logError(appError)
+                    await handleError(appError)
+                }
             }
         }
+    }
+
+    @MainActor
+    private func handleError(_ error: AppError) {
+        self.lastError = error
+        self.onError?(error)
     }
 
     private func configureSession(_ session: GroupSession<MagicARActivity>) {
@@ -99,10 +126,19 @@ class SharePlayService: ObservableObject {
 
         // Listen for messages
         Task {
-            guard let messenger = messenger else { return }
+            guard let messenger = messenger else {
+                ErrorLoggingService.shared.logger.error("No messenger available for listening to messages")
+                return
+            }
 
-            for await (message, _) in messenger.messages(of: SyncMessage.self) {
-                handleReceivedMessage(message)
+            do {
+                for await (message, _) in messenger.messages(of: SyncMessage.self) {
+                    handleReceivedMessage(message)
+                }
+            } catch {
+                let appError = AppError.sharePlayMessageFailed("Message receiving failed: \(error.localizedDescription)")
+                ErrorLoggingService.shared.logError(appError)
+                await handleError(appError)
             }
         }
 
@@ -111,8 +147,42 @@ class SharePlayService: ObservableObject {
 
     func sendMessage(_ message: SyncMessage) {
         Task {
-            try? await messenger?.send(message)
+            guard let messenger = messenger else {
+                let error = AppError.sharePlayMessageFailed("No active SharePlay session")
+                ErrorLoggingService.shared.logError(error)
+                await handleError(error)
+                return
+            }
+
+            do {
+                try await messenger.send(message)
+                ErrorLoggingService.shared.logger.debug("SharePlay message sent: \(message.type.rawValue)")
+            } catch {
+                let appError = AppError.sharePlayMessageFailed(error.localizedDescription)
+                ErrorLoggingService.shared.logError(appError)
+                await handleError(appError)
+
+                // Retry mechanism for network errors
+                if isNetworkError(error) {
+                    ErrorLoggingService.shared.logger.info("Retrying message send after network error")
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 second delay
+
+                    do {
+                        try await messenger.send(message)
+                        ErrorLoggingService.shared.logger.info("Message retry succeeded")
+                    } catch {
+                        ErrorLoggingService.shared.logSwiftError(error, context: "Message retry failed")
+                    }
+                }
+            }
         }
+    }
+
+    private func isNetworkError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        return nsError.domain == NSURLErrorDomain ||
+               nsError.code == NSURLErrorNotConnectedToInternet ||
+               nsError.code == NSURLErrorNetworkConnectionLost
     }
 
     private func handleReceivedMessage(_ message: SyncMessage) {

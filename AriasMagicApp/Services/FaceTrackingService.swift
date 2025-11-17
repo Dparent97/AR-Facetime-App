@@ -32,37 +32,92 @@ class FaceTrackingService {
     private var lastMouthOpenTime: Date?
     private let debounceInterval: TimeInterval = 1.0
 
+    // Error tracking
+    private var consecutiveErrors: Int = 0
+    private let maxConsecutiveErrors: Int = 5
+    private var isDisabled: Bool = false
+
     init(delegate: FaceTrackingDelegate? = nil) {
         self.delegate = delegate
+        ErrorLoggingService.shared.logger.info("FaceTrackingService initialized")
     }
 
     func processFaceAnchor(_ faceAnchor: ARFaceAnchor) {
-        // Check for smile
-        if let leftSmile = faceAnchor.blendShapes[.mouthSmileLeft] as? Float,
-           let rightSmile = faceAnchor.blendShapes[.mouthSmileRight] as? Float {
-            let smileValue = (leftSmile + rightSmile) / 2.0
+        // Check if service is disabled due to too many errors
+        guard !isDisabled else { return }
 
-            if smileValue > smileThreshold {
-                triggerExpression(.smile, lastTime: &lastSmileTime)
+        do {
+            // Validate face anchor data
+            guard faceAnchor.isTracked else {
+                throw AppError.faceTrackingFailed("Face not tracked")
             }
+
+            // Check for smile
+            if let leftSmile = faceAnchor.blendShapes[.mouthSmileLeft] as? Float,
+               let rightSmile = faceAnchor.blendShapes[.mouthSmileRight] as? Float {
+                let smileValue = (leftSmile + rightSmile) / 2.0
+
+                if smileValue > smileThreshold {
+                    triggerExpression(.smile, lastTime: &lastSmileTime)
+                }
+            } else {
+                throw AppError.faceTrackingFailed("Could not read smile blend shapes")
+            }
+
+            // Check for raised eyebrows
+            if let leftBrow = faceAnchor.blendShapes[.browInnerUp] as? Float,
+               let rightBrow = faceAnchor.blendShapes[.browInnerUp] as? Float {
+                let browValue = (leftBrow + rightBrow) / 2.0
+
+                if browValue > eyebrowThreshold {
+                    triggerExpression(.eyebrowsRaised, lastTime: &lastEyebrowTime)
+                }
+            } else {
+                throw AppError.faceTrackingFailed("Could not read eyebrow blend shapes")
+            }
+
+            // Check for mouth open
+            if let mouthOpen = faceAnchor.blendShapes[.jawOpen] as? Float {
+                if mouthOpen > mouthOpenThreshold {
+                    triggerExpression(.mouthOpen, lastTime: &lastMouthOpenTime)
+                }
+            } else {
+                throw AppError.faceTrackingFailed("Could not read jaw blend shapes")
+            }
+
+            // Reset error counter on success
+            if consecutiveErrors > 0 {
+                ErrorLoggingService.shared.logger.info("Face tracking recovered after \(consecutiveErrors) errors")
+                consecutiveErrors = 0
+            }
+
+        } catch let error as AppError {
+            handleProcessingError(error)
+        } catch {
+            handleProcessingError(.faceTrackingFailed("Unexpected error: \(error.localizedDescription)"))
+        }
+    }
+
+    private func handleProcessingError(_ error: AppError) {
+        consecutiveErrors += 1
+
+        // Only log every 5th error to avoid spam
+        if consecutiveErrors % 5 == 0 {
+            ErrorLoggingService.shared.logError(error)
         }
 
-        // Check for raised eyebrows
-        if let leftBrow = faceAnchor.blendShapes[.browInnerUp] as? Float,
-           let rightBrow = faceAnchor.blendShapes[.browInnerUp] as? Float {
-            let browValue = (leftBrow + rightBrow) / 2.0
-
-            if browValue > eyebrowThreshold {
-                triggerExpression(.eyebrowsRaised, lastTime: &lastEyebrowTime)
-            }
+        // Disable service if too many consecutive errors
+        if consecutiveErrors >= maxConsecutiveErrors {
+            isDisabled = true
+            let criticalError = AppError.faceTrackingFailed("Face tracking disabled after \(maxConsecutiveErrors) consecutive errors")
+            ErrorLoggingService.shared.logError(criticalError)
         }
+    }
 
-        // Check for mouth open
-        if let mouthOpen = faceAnchor.blendShapes[.jawOpen] as? Float {
-            if mouthOpen > mouthOpenThreshold {
-                triggerExpression(.mouthOpen, lastTime: &lastMouthOpenTime)
-            }
-        }
+    func reset() {
+        consecutiveErrors = 0
+        isDisabled = false
+        ErrorLoggingService.shared.logger.info("Face tracking service reset")
     }
 
     private func triggerExpression(_ expression: FaceExpression, lastTime: inout Date?) {
