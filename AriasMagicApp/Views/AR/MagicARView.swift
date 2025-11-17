@@ -125,9 +125,7 @@ struct MagicARView: UIViewRepresentable {
 
             // Add current characters
             for character in viewModel.characters {
-                if let entity = character.entity {
-                    anchor.addChild(entity)
-                }
+                anchor.addChild(character.modelEntity)
             }
         }
 
