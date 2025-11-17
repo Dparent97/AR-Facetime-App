@@ -11,11 +11,15 @@ struct ContentView: View {
     @StateObject private var characterViewModel = CharacterViewModel()
     @StateObject private var sharePlayService = SharePlayService()
     @State private var showOnboarding = true
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
             // AR View (main background)
-            MagicARView(viewModel: characterViewModel)
+            MagicARView(
+                viewModel: characterViewModel,
+                isActive: scenePhase == .active
+            )
                 .edgesIgnoringSafeArea(.all)
 
             // UI Overlay
