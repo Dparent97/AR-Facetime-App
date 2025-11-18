@@ -75,6 +75,9 @@ class FaceTrackingService {
 
         lastTime = now
 
+        // Haptic feedback for successful face tracking trigger
+        HapticManager.shared.faceTrackingSuccess()
+
         DispatchQueue.main.async {
             self.delegate?.didDetectExpression(expression)
         }
