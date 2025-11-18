@@ -49,7 +49,7 @@
 
 <!-- Post new questions here -->
 
-_No active questions yet. Agents will post as development begins._
+_No active questions yet. Phase 4 agents will post questions as development begins (Nov 18, 2025)._
 
 ---
 
@@ -90,4 +90,4 @@ _None yet._
 
 ---
 
-**Last Updated:** November 17, 2025
+**Last Updated:** November 18, 2025 (Phase 4 Launch)
