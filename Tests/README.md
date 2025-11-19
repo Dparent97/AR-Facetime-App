@@ -1,29 +1,45 @@
-# Test Suite - Aria's Magic SharePlay App
+# Aria's Magic SharePlay App - Test Suite
 
-This directory contains all unit and UI tests for the application.
+## Overview
 
-## Structure
+Comprehensive test coverage ensuring quality and preventing regressions for Aria's Magic SharePlay App. This test suite follows industry best practices with unit tests, integration tests, UI tests, and performance tests.
+
+## Test Structure
 
 ```
 Tests/
-├── Unit/                           # Unit tests for models, services, viewmodels
-│   ├── CharacterProtocolTests.swift
-│   └── ...
-├── UI/                             # UI tests for user interactions
-│   └── ...
-└── Performance/                    # Performance and memory tests
-    └── ...
+├── Fixtures/
+│   └── TestFixtures.swift           # Mock objects and test data
+├── Unit/
+│   ├── Models/
+│   │   ├── CharacterTests.swift     # Character model tests (30+ tests)
+│   │   ├── CharacterProtocolTests.swift # Protocol conformance tests
+│   │   └── MagicEffectTests.swift   # Magic effect tests (25+ tests)
+│   ├── Services/
+│   │   ├── FaceTrackingServiceTests.swift  # Face tracking tests (20+ tests)
+│   │   └── SharePlayServiceTests.swift     # SharePlay tests (30+ tests)
+│   └── ViewModels/
+│       └── CharacterViewModelTests.swift   # ViewModel tests (40+ tests)
+├── UI/                               # UI tests (to be added)
+├── Performance/                      # Performance tests (to be added)
+└── Integration/                      # Integration tests (to be added)
 ```
 
-## Running Tests
+## Quick Start
 
-### In Xcode
-1. Open the Xcode project
-2. Press `Cmd + U` to run all tests
-3. Or select individual test classes/methods from the Test Navigator (`Cmd + 6`)
+### Running All Tests
 
-### From Command Line
+**Note:** This project currently contains Swift test files but does not yet have an Xcode project file (`.xcodeproj`). Before running tests, you'll need to create an Xcode project:
+
+1. Open Xcode
+2. Create a new iOS App project named "AriasMagicApp"
+3. Add all Swift files from `AriasMagicApp/` to the project
+4. Add test targets and test files from `Tests/`
+
+Once the Xcode project is set up:
+
 ```bash
+# Run all tests
 xcodebuild test -scheme AriasMagicApp -destination 'platform=iOS Simulator,name=iPhone 15'
 ```
 
@@ -33,49 +49,50 @@ xcodebuild test -scheme AriasMagicApp -destination 'platform=iOS Simulator,name=
 - **Phase 2**: 80%+ code coverage
 - **Phase 3**: Production-ready (maintained at 80%+)
 
-## Current Tests
+## Test Categories
 
-### CharacterProtocolTests (27 tests)
-Tests for the `AnimatableCharacter` protocol and `Character` class conformance:
+### Unit Tests
 
-**Protocol Conformance:**
-- Character conforms to AnimatableCharacter
-- ModelEntity is non-optional
-- Character type and ID are set correctly
-- Initial state is idle
+Unit tests verify individual components in isolation using mocks and fixtures.
 
-**Position & Scale:**
-- setPosition updates both property and entity
-- setScale updates both property and entity
-- Position and scale are independent
+#### Models
+- **CharacterTests:** Character initialization, actions, entity creation, edge cases
+- **CharacterProtocolTests:** Protocol conformance, position/scale updates, action execution
+- **MagicEffectTests:** Effect types, particle generation, performance
 
-**Actions:**
-- All 6 action types can be performed
-- Action completion callbacks work
-- Actions reset to idle after duration
-- Idle action completes immediately
-- Multiple actions can be sequenced
+#### Services
+- **FaceTrackingServiceTests:** Expression detection, thresholds, debouncing, delegate callbacks
+- **SharePlayServiceTests:** Message encoding/decoding, session management, sync messages
 
-**Factory:**
-- DefaultCharacterFactory creates valid characters
-- Factory returns AnimatableCharacter protocol type
-- Factory supports all character types
+#### ViewModels
+- **CharacterViewModelTests:** Character spawning, actions, effects, face expression handling
 
-**Cleanup:**
-- cleanup() removes entity from parent
+### UI Tests (Planned)
 
-## Writing New Tests
+UI tests verify end-to-end user flows:
+- Onboarding flow
+- Character spawning and selection
+- Gesture interactions (tap, drag, pinch)
+- Settings screen
+- SharePlay UI
 
-### Test File Naming
-- Unit tests: `[ClassName]Tests.swift`
-- UI tests: `[FeatureName]UITests.swift`
-- Performance tests: `[FeatureName]PerformanceTests.swift`
+## Writing Tests
 
-### Test Method Naming
-Use descriptive names that explain what is being tested:
+### Test Structure (AAA Pattern)
+
+All tests follow the Arrange-Act-Assert pattern:
+
 ```swift
-func testCharacterConformsToAnimatableCharacter() { ... }
-func testSetPositionUpdatesEntity() { ... }
+func testExample() {
+    // ARRANGE: Set up test conditions
+    let character = Character(type: .sparkleThePrincess)
+
+    // ACT: Perform action
+    character.performAction(.wave)
+
+    // ASSERT: Verify results
+    XCTAssertEqual(character.currentAction, .wave)
+}
 ```
 
 ### Best Practices
@@ -85,21 +102,20 @@ func testSetPositionUpdatesEntity() { ... }
 4. Use meaningful assertion messages
 5. Test edge cases and error paths
 
-## Integration with CI/CD
+## CI/CD
 
-When the project is set up with GitHub Actions or similar:
-- All tests run on every pull request
-- Tests must pass before merging
-- Code coverage reports are generated
+### GitHub Actions
 
-## QA Engineer Notes
+Tests run automatically on every push via GitHub Actions. See `.github/workflows/ios-tests.yml`.
 
-The QA Engineer is responsible for:
-- Adding new test files for new features
-- Maintaining test coverage above targets
-- Running performance tests regularly
-- Updating this README with new test info
+**Workflow includes:**
+- Unit test execution
+- UI test execution
+- Code coverage generation
+- Coverage reporting to Codecov
+- Swift lint checks
+- Build verification
 
 ---
 
-**Last Updated:** 2025-11-17 by iOS Core Engineer
+**Last Updated:** 2025-11-19
