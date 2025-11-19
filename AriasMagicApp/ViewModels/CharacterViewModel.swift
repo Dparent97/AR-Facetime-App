@@ -39,6 +39,8 @@ class CharacterViewModel: ObservableObject {
     }
 
     func removeCharacter(_ character: Character) {
+        // Cancel all pending animations before removing to prevent memory leaks
+        character.cancelAllAnimations()
         characters.removeAll { $0.id == character.id }
     }
 
@@ -55,7 +57,8 @@ class CharacterViewModel: ObservableObject {
         activeEffect = effect
 
         // Auto-dismiss effect after duration
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
+            guard let self = self else { return }
             if self.activeEffect == effect {
                 self.activeEffect = nil
             }

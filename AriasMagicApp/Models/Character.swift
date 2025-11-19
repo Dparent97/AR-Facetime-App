@@ -35,6 +35,9 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
 
     let modelEntity: ModelEntity
 
+    // Track pending animations for cancellation (memory leak prevention)
+    private var pendingWorkItems: [DispatchWorkItem] = []
+
     init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: SIMD3<Float> = [1, 1, 1]) {
         self.id = id
         self.characterType = type
@@ -53,6 +56,17 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         modelEntity.scale = scale
         modelEntity.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])])
         modelEntity.name = type.rawValue
+    }
+
+    deinit {
+        // Cancel all pending animations to prevent memory leaks
+        cancelAllAnimations()
+    }
+
+    /// Cancels all pending animation work items
+    func cancelAllAnimations() {
+        pendingWorkItems.forEach { $0.cancel() }
+        pendingWorkItems.removeAll()
     }
 
     private static func colorForType(_ type: CharacterType) -> UIColor {
@@ -95,10 +109,14 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
             transform.translation.y += 0.1
             modelEntity.move(to: transform, relativeTo: modelEntity.parent, duration: 0.3)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                var transform = self.modelEntity.transform
                 transform.translation.y -= 0.1
                 self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.3)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
             scheduleCompletion(after: 0.6, completion: completion)
 
         case .twirl:
@@ -113,10 +131,14 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
             transform.translation.y += 0.2
             modelEntity.move(to: transform, relativeTo: modelEntity.parent, duration: 0.4)
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                var transform = self.modelEntity.transform
                 transform.translation.y -= 0.2
                 self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.4)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: workItem)
             scheduleCompletion(after: 0.8, completion: completion)
 
         case .sparkle:
@@ -131,18 +153,25 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
                 parent.addChild(sparkleEffect)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                var transform = self.modelEntity.transform
                 transform.scale = [1, 1, 1]
                 self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.3)
             }
+            pendingWorkItems.append(workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
             scheduleCompletion(after: 0.6, completion: completion)
         }
 
         // Reset to idle after animation
         let animationDuration = durationForAction(action)
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+        let idleWorkItem = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
             self.currentAction = .idle
         }
+        pendingWorkItems.append(idleWorkItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration, execute: idleWorkItem)
     }
 
     // MARK: - AnimatableCharacter Protocol Methods
@@ -159,6 +188,8 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
     }
 
     func cleanup() {
+        // Cancel animations first
+        cancelAllAnimations()
         // Remove entity from parent and clear resources
         modelEntity.removeFromParent()
         // Additional cleanup can be added here (e.g., stop animations, release textures)
@@ -208,11 +239,13 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         }
     }
 
-    /// Schedule completion callback
+    /// Schedule completion callback with memory leak prevention
     private func scheduleCompletion(after delay: TimeInterval, completion: (() -> Void)?) {
         guard let completion = completion else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+        let workItem = DispatchWorkItem {
             completion()
         }
+        pendingWorkItems.append(workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
     }
 }
