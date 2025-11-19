@@ -51,6 +51,9 @@ struct ContentView: View {
 
                 Spacer()
 
+                // Character picker
+                CharacterPickerView(viewModel: characterViewModel)
+
                 // Action buttons
                 ActionButtonsView(viewModel: characterViewModel)
                     .padding(.bottom, 20)

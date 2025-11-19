@@ -162,12 +162,14 @@ struct MagicARView: UIViewRepresentable {
             // Check if tapping on existing character
             if let entity = arView.entity(at: location) as? ModelEntity {
                 selectedEntity = entity
+                HapticManager.shared.trigger(.selection)
                 return
             }
 
             // Spawn new character at tap location
             if let result = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal).first {
                 viewModel.spawnCharacter(at: result.worldTransform.position)
+                HapticManager.shared.characterSpawned()
             }
         }
 
@@ -176,17 +178,26 @@ struct MagicARView: UIViewRepresentable {
 
             let location = gesture.location(in: arView)
 
+            if gesture.state == .began {
+                HapticManager.shared.trigger(.light)
+            }
+
             if let result = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal).first {
                 selectedEntity.position = result.worldTransform.position
             }
 
             if gesture.state == .ended {
                 self.selectedEntity = nil
+                HapticManager.shared.trigger(.light)
             }
         }
 
         @objc func handlePinch(_ gesture: UIPinchGestureRecognizer) {
             guard let selectedEntity = selectedEntity else { return }
+
+            if gesture.state == .began {
+                HapticManager.shared.trigger(.light)
+            }
 
             if gesture.state == .changed {
                 let scale = Float(gesture.scale)
@@ -195,6 +206,7 @@ struct MagicARView: UIViewRepresentable {
 
             if gesture.state == .ended {
                 gesture.scale = 1.0
+                HapticManager.shared.trigger(.light)
             }
         }
 
