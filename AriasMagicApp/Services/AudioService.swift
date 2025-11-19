@@ -2,278 +2,381 @@
 //  AudioService.swift
 //  Aria's Magic SharePlay App
 //
-//  Service for playing sound effects and managing audio
+//  Audio service for managing sound effects and spatial audio
 //
 
 import Foundation
 import AVFoundation
 import Combine
 
-/// Sound effect types for character actions
-enum CharacterSound: String {
-    case spawn = "character_spawn"
-    case wave = "character_wave"
-    case dance = "character_dance"
-    case twirl = "character_twirl"
-    case jump = "character_jump"
-    case sparkle = "character_sparkle"
+/// Sound effects available in the app
+enum SoundEffect: String, CaseIterable {
+    // Character actions
+    case characterSpawn = "character_spawn"
+    case characterWave = "character_wave"
+    case characterDance = "character_dance"
+    case characterTwirl = "character_twirl"
+    case characterJump = "character_jump"
+    case characterRemove = "character_remove"
+
+    // Magic effects
+    case sparkles = "sparkles"
+    case snow = "snow"
+    case bubbles = "bubbles"
+
+    // UI interactions
+    case faceTracking = "face_tracking"
+    case buttonTap = "button_tap"
+    case sharePlayConnected = "shareplay_connected"
+
+    /// Filename for the sound effect (without extension)
+    var filename: String { rawValue }
 }
 
-/// Sound effect types for magical effects
-enum EffectSound: String {
-    case sparkles = "effect_sparkles"
-    case snow = "effect_snow"
-    case bubbles = "effect_bubbles"
-}
-
-/// Sound effect types for face tracking interactions
-enum FaceTrackingSound: String {
-    case smile = "face_smile"
-    case eyebrows = "face_eyebrows"
-    case mouth = "face_mouth"
-}
-
-/// Manages audio playback for the app
+/// Audio service for playing sound effects with volume control and spatial audio support
 class AudioService: ObservableObject {
-
-    // MARK: - Singleton
-
     static let shared = AudioService()
 
     // MARK: - Published Properties
 
-    /// Master volume (0.0 to 1.0)
-    @Published var masterVolume: Float = 0.7
-
     /// Whether sound effects are enabled
-    @Published var soundEffectsEnabled: Bool = true
+    @Published var isEnabled: Bool = true {
+        didSet {
+            if !isEnabled {
+                stopAllSounds()
+            }
+        }
+    }
 
-    /// Whether spatial audio is enabled
-    @Published var spatialAudioEnabled: Bool = true
+    /// Master volume for all sound effects (0.0 to 1.0)
+    @Published var volume: Float = 0.8 {
+        didSet {
+            updateVolume()
+        }
+    }
 
     // MARK: - Private Properties
 
-    /// Active audio players for simultaneous playback
-    private var activePlayers: [UUID: AVAudioPlayer] = [:]
+    /// Audio engine for low-latency playback
+    private let audioEngine = AVAudioEngine()
 
-    /// Lock for thread-safe player management
-    private let playerLock = NSLock()
+    /// Audio players for each sound effect
+    private var audioPlayers: [SoundEffect: AVAudioPlayerNode] = [:]
 
-    /// Audio session configuration
-    private let audioSession = AVAudioSession.sharedInstance()
+    /// Audio buffers (preloaded for fast playback)
+    private var audioBuffers: [SoundEffect: AVAudioPCMBuffer] = [:]
+
+    /// Mixer node for volume control
+    private let mixerNode = AVAudioMixerNode()
+
+    /// Is the audio engine running
+    private var isEngineRunning = false
+
+    /// Queue for audio operations
+    private let audioQueue = DispatchQueue(label: "com.ariasmagic.audio", qos: .userInitiated)
 
     // MARK: - Initialization
 
-    private init() {
-        setupAudioSession()
+    init() {
+        setupAudioEngine()
         preloadSounds()
     }
 
-    // MARK: - Audio Session Setup
+    // MARK: - Audio Engine Setup
 
-    private func setupAudioSession() {
+    private func setupAudioEngine() {
+        // Attach mixer node
+        audioEngine.attach(mixerNode)
+
+        // Connect mixer to output
+        audioEngine.connect(
+            mixerNode,
+            to: audioEngine.mainMixerNode,
+            format: nil
+        )
+
+        // Set initial volume
+        mixerNode.outputVolume = volume
+
+        // Configure audio session
+        configureAudioSession()
+
+        // Start engine
+        startEngine()
+    }
+
+    private func configureAudioSession() {
         do {
-            // Configure audio session for playback with other audio
+            let audioSession = AVAudioSession.sharedInstance()
+
+            // Configure for ambient playback (mix with other audio)
             try audioSession.setCategory(
                 .ambient,
                 mode: .default,
                 options: [.mixWithOthers]
             )
+
             try audioSession.setActive(true)
-            print("AudioService: Audio session configured successfully")
         } catch {
-            print("AudioService: Failed to setup audio session: \(error.localizedDescription)")
+            print("⚠️ AudioService: Failed to configure audio session: \(error.localizedDescription)")
+        }
+    }
+
+    private func startEngine() {
+        guard !isEngineRunning else { return }
+
+        do {
+            try audioEngine.start()
+            isEngineRunning = true
+        } catch {
+            print("⚠️ AudioService: Failed to start audio engine: \(error.localizedDescription)")
         }
     }
 
     // MARK: - Sound Preloading
 
-    /// Preload all sound effects at app launch
-    private func preloadSounds() {
-        AssetLoader.shared.preloadSounds { success in
-            if success {
-                print("AudioService: Sound effects preloaded")
-            } else {
-                print("AudioService: Some sound effects failed to preload (files may not exist yet)")
+    /// Preload all sound effects for immediate playback
+    func preloadSounds() {
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+
+            for effect in SoundEffect.allCases {
+                self.preloadSound(effect)
+            }
+
+            print("✅ AudioService: Preloaded \(SoundEffect.allCases.count) sound effects")
+        }
+    }
+
+    private func preloadSound(_ effect: SoundEffect) {
+        // For prototype: Create silent placeholder buffers
+        // In production, the 3D Engineer will provide actual sound files
+
+        guard let buffer = createPlaceholderBuffer() else {
+            print("⚠️ AudioService: Failed to create buffer for \(effect.rawValue)")
+            return
+        }
+
+        audioBuffers[effect] = buffer
+
+        // Create player node for this effect
+        let playerNode = AVAudioPlayerNode()
+        audioEngine.attach(playerNode)
+        audioEngine.connect(playerNode, to: mixerNode, format: buffer.format)
+
+        audioPlayers[effect] = playerNode
+    }
+
+    /// Create a placeholder silent buffer for prototype
+    /// TODO: Replace with actual sound file loading when assets are available
+    private func createPlaceholderBuffer() -> AVAudioPCMBuffer? {
+        // Create a short silent buffer as placeholder
+        let format = AVAudioFormat(
+            standardFormatWithSampleRate: 44100,
+            channels: 2
+        )
+
+        guard let format = format else { return nil }
+
+        // 0.1 second buffer
+        let frameCount = AVAudioFrameCount(format.sampleRate * 0.1)
+        guard let buffer = AVAudioPCMBuffer(
+            pcmFormat: format,
+            frameCapacity: frameCount
+        ) else {
+            return nil
+        }
+
+        buffer.frameLength = frameCount
+
+        return buffer
+    }
+
+    /// Load sound from file (for production use)
+    private func loadSoundFile(_ effect: SoundEffect) -> AVAudioPCMBuffer? {
+        // Get file URL (m4a or wav)
+        guard let fileURL = Bundle.main.url(
+            forResource: effect.filename,
+            withExtension: "m4a"
+        ) else {
+            // Try wav format
+            guard let fileURL = Bundle.main.url(
+                forResource: effect.filename,
+                withExtension: "wav"
+            ) else {
+                print("⚠️ AudioService: Sound file not found: \(effect.filename)")
+                return nil
+            }
+
+            return loadAudioFile(fileURL)
+        }
+
+        return loadAudioFile(fileURL)
+    }
+
+    private func loadAudioFile(_ url: URL) -> AVAudioPCMBuffer? {
+        do {
+            let audioFile = try AVAudioFile(forReading: url)
+            let format = audioFile.processingFormat
+
+            guard let buffer = AVAudioPCMBuffer(
+                pcmFormat: format,
+                frameCapacity: AVAudioFrameCount(audioFile.length)
+            ) else {
+                return nil
+            }
+
+            try audioFile.read(into: buffer)
+            buffer.frameLength = AVAudioFrameCount(audioFile.length)
+
+            return buffer
+        } catch {
+            print("⚠️ AudioService: Failed to load audio file: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    // MARK: - Playback
+
+    /// Play a sound effect
+    ///
+    /// - Parameters:
+    ///   - effect: The sound effect to play
+    ///   - volume: Optional volume override (0.0 to 1.0)
+    func playSound(_ effect: SoundEffect, volume: Float? = nil) {
+        guard isEnabled else { return }
+
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+            guard let playerNode = self.audioPlayers[effect] else { return }
+            guard let buffer = self.audioBuffers[effect] else { return }
+
+            // Stop if already playing
+            playerNode.stop()
+
+            // Set volume
+            let effectiveVolume = volume ?? self.volume
+            playerNode.volume = effectiveVolume
+
+            // Schedule buffer
+            playerNode.scheduleBuffer(buffer, at: nil, options: [], completionHandler: nil)
+
+            // Start playback if not already playing
+            if !playerNode.isPlaying {
+                playerNode.play()
             }
         }
     }
 
-    // MARK: - Sound Playback
-
-    /// Play a character action sound
+    /// Play sound with spatial audio positioning
+    ///
     /// - Parameters:
-    ///   - sound: The character sound to play
-    ///   - volume: Optional volume override (0.0 to 1.0)
-    func playSound(_ sound: CharacterSound, volume: Float? = nil) {
-        guard soundEffectsEnabled else { return }
-        playAudio(named: sound.rawValue, volume: volume)
-    }
-
-    /// Play a magical effect sound
-    /// - Parameters:
-    ///   - sound: The effect sound to play
-    ///   - volume: Optional volume override (0.0 to 1.0)
-    func playEffect(_ sound: EffectSound, volume: Float? = nil) {
-        guard soundEffectsEnabled else { return }
-        playAudio(named: sound.rawValue, volume: volume)
-    }
-
-    /// Play a face tracking sound
-    /// - Parameters:
-    ///   - sound: The face tracking sound to play
-    ///   - volume: Optional volume override (0.0 to 1.0)
-    func playFaceSound(_ sound: FaceTrackingSound, volume: Float? = nil) {
-        guard soundEffectsEnabled else { return }
-        playAudio(named: sound.rawValue, volume: volume)
-    }
-
-    /// Core audio playback function
-    private func playAudio(named soundName: String, volume: Float? = nil) {
-        // Get sound from asset loader
-        guard let cachedPlayer = AssetLoader.shared.getSound(named: soundName) else {
-            print("AudioService: Sound not found: \(soundName)")
-            return
-        }
-
-        // Create a copy of the player for concurrent playback
-        guard let soundData = try? Data(contentsOf: cachedPlayer.url!),
-              let player = try? AVAudioPlayer(data: soundData) else {
-            print("AudioService: Failed to create player for: \(soundName)")
-            return
-        }
-
-        // Configure player
-        player.volume = volume ?? masterVolume
-        player.prepareToPlay()
-
-        // Store player reference
-        let playerId = UUID()
-        playerLock.lock()
-        activePlayers[playerId] = player
-        playerLock.unlock()
-
-        // Play sound
-        player.play()
-
-        // Clean up after playback
-        DispatchQueue.main.asyncAfter(deadline: .now() + player.duration + 0.5) { [weak self] in
-            self?.playerLock.lock()
-            self?.activePlayers.removeValue(forKey: playerId)
-            self?.playerLock.unlock()
-        }
-    }
-
-    // MARK: - Spatial Audio
-
-    /// Play a sound with spatial audio positioning
-    /// - Parameters:
-    ///   - sound: The character sound to play
-    ///   - position: 3D position in world space
-    func playSpatialSound(_ sound: CharacterSound, at position: SIMD3<Float>) {
-        guard soundEffectsEnabled && spatialAudioEnabled else {
-            // Fall back to regular playback
-            playSound(sound)
-            return
-        }
-
-        // For now, fall back to regular playback
-        // TODO: Implement true spatial audio with RealityKit's audio capabilities
-        playSound(sound, volume: calculateVolumeForDistance(to: position))
-    }
-
-    /// Calculate volume based on distance from camera/listener
-    private func calculateVolumeForDistance(to position: SIMD3<Float>) -> Float {
-        let distance = length(position)
-        let maxDistance: Float = 5.0 // Maximum hearing distance
-
-        if distance >= maxDistance {
-            return 0.0
-        }
-
-        // Linear falloff
-        let volumeMultiplier = 1.0 - (distance / maxDistance)
-        return masterVolume * max(0.0, min(1.0, volumeMultiplier))
+    ///   - effect: The sound effect to play
+    ///   - position: 3D position for spatial audio
+    func playSoundAt(_ effect: SoundEffect, position: SIMD3<Float>) {
+        // For now, just play normally
+        // TODO: Implement spatial audio with AVAudio3DMixing when 3D models are ready
+        playSound(effect)
     }
 
     // MARK: - Volume Control
 
-    /// Set master volume for all sound effects
+    /// Set the master volume
+    ///
     /// - Parameter volume: Volume level (0.0 to 1.0)
-    func setMasterVolume(_ volume: Float) {
-        masterVolume = max(0.0, min(1.0, volume))
-
-        // Update all active players
-        playerLock.lock()
-        for player in activePlayers.values {
-            player.volume = masterVolume
-        }
-        playerLock.unlock()
+    func setVolume(_ volume: Float) {
+        self.volume = max(0.0, min(1.0, volume))
     }
 
-    /// Toggle sound effects on/off
-    func toggleSoundEffects() {
-        soundEffectsEnabled.toggle()
-
-        if !soundEffectsEnabled {
-            stopAllSounds()
-        }
+    private func updateVolume() {
+        mixerNode.outputVolume = volume
     }
+
+    /// Toggle sound on/off
+    func toggleSound() {
+        isEnabled.toggle()
+    }
+
+    // MARK: - Cleanup
 
     /// Stop all currently playing sounds
     func stopAllSounds() {
-        playerLock.lock()
-        for player in activePlayers.values {
-            player.stop()
+        audioQueue.async { [weak self] in
+            guard let self = self else { return }
+
+            for (_, player) in self.audioPlayers {
+                player.stop()
+            }
         }
-        activePlayers.removeAll()
-        playerLock.unlock()
     }
 
-    // MARK: - Testing & Debug
-
-    /// Test a sound by name (for debugging)
-    func testSound(named soundName: String) {
-        print("AudioService: Testing sound: \(soundName)")
-        playAudio(named: soundName)
-    }
-
-    /// Get list of all loaded sounds
-    func getLoadedSounds() -> [String] {
-        // This would require tracking loaded sounds
-        // For now, return expected sound list
-        return [
-            "character_spawn", "character_wave", "character_dance",
-            "character_twirl", "character_jump", "character_sparkle",
-            "effect_sparkles", "effect_snow", "effect_bubbles",
-            "face_smile", "face_eyebrows", "face_mouth"
-        ]
+    deinit {
+        stopAllSounds()
+        audioEngine.stop()
     }
 }
 
-// MARK: - Character Action Integration
+// MARK: - Integration Helpers
 
-extension Character {
-
+extension AudioService {
     /// Play sound for character action
-    func playActionSound() {
-        let sound: CharacterSound
-
-        switch currentAction {
+    func playCharacterAction(_ action: CharacterAction) {
+        let effect: SoundEffect
+        switch action {
         case .idle:
             return // No sound for idle
         case .wave:
-            sound = .wave
+            effect = .characterWave
         case .dance:
-            sound = .dance
+            effect = .characterDance
         case .twirl:
-            sound = .twirl
+            effect = .characterTwirl
         case .jump:
-            sound = .jump
+            effect = .characterJump
         case .sparkle:
-            sound = .sparkle
+            effect = .sparkles
         }
 
-        AudioService.shared.playSound(sound)
+        playSound(effect)
+    }
+
+    /// Play sound for magic effect
+    func playMagicEffect(_ effect: MagicEffect) {
+        let soundEffect: SoundEffect
+        switch effect {
+        case .sparkles:
+            soundEffect = .sparkles
+        case .snow:
+            soundEffect = .snow
+        case .bubbles:
+            soundEffect = .bubbles
+        }
+
+        playSound(soundEffect)
+    }
+
+    /// Play character spawn sound
+    func playCharacterSpawn() {
+        playSound(.characterSpawn)
+    }
+
+    /// Play character remove sound
+    func playCharacterRemove() {
+        playSound(.characterRemove)
+    }
+
+    /// Play face tracking trigger sound
+    func playFaceTracking() {
+        playSound(.faceTracking, volume: volume * 0.6) // Quieter for face tracking
+    }
+
+    /// Play button tap sound
+    func playButtonTap() {
+        playSound(.buttonTap, volume: volume * 0.4) // Very quiet for UI
+    }
+
+    /// Play SharePlay connected sound
+    func playSharePlayConnected() {
+        playSound(.sharePlayConnected)
     }
 }

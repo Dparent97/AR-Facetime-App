@@ -9,88 +9,219 @@
 import Foundation
 import RealityKit
 
-/// Protocol defining the contract for all animatable characters in the AR experience.
-/// This abstraction allows the 3D Engineer to provide custom implementations
-/// while the core system remains unchanged.
+/// Protocol defining the contract for all animatable characters in the app.
+///
+/// This protocol abstracts the implementation details of character rendering and animation,
+/// allowing the core logic to remain independent of specific 3D model implementations.
+/// The 3D Engineer will create concrete implementations that conform to this protocol.
+///
+/// - Note: All methods are expected to be safe to call from the main thread.
+/// - Important: Implementations must handle their own resource cleanup in `cleanup()`.
 protocol AnimatableCharacter: AnyObject {
-    /// The underlying RealityKit entity that represents this character in AR space
+    /// The underlying RealityKit entity representing this character
+    ///
+    /// This entity should be added to an AR scene for rendering.
     var modelEntity: ModelEntity { get }
 
-    /// Character type identifier (e.g., Sparkle the Princess, Luna the Star Dancer)
+    /// The type identifier for this character (e.g., Sparkle the Princess)
     var characterType: CharacterType { get }
 
-    /// Unique instance identifier for tracking and synchronization
+    /// Unique instance identifier
+    ///
+    /// Used for tracking individual characters across SharePlay sessions
+    /// and managing character lifecycle.
     var id: UUID { get }
 
-    /// Current action being performed by the character
+    /// The current action being performed by this character
+    ///
+    /// Updated when `performAction(_:completion:)` is called.
     var currentAction: CharacterAction { get }
 
-    /// Current position in AR world space
+    /// The current position of the character in 3D space
+    ///
+    /// This should reflect the actual position of the `modelEntity`.
     var position: SIMD3<Float> { get set }
 
-    /// Current scale of the character
-    var scale: SIMD3<Float> { get set }
+    /// The current scale of the character
+    ///
+    /// This should reflect the actual scale of the `modelEntity`.
+    var scale: Float { get set }
 
-    /// Perform an action with animation and completion callback
+    /// Perform an action with optional completion callback
+    ///
+    /// This method triggers an animation corresponding to the given action.
+    /// For skeletal animations, this should play the appropriate animation clip.
+    /// For procedural animations, this should apply transforms/movements.
+    ///
     /// - Parameters:
     ///   - action: The action to perform (wave, dance, jump, etc.)
-    ///   - completion: Called when the animation completes
+    ///   - completion: Called when the animation completes. May be called on any thread.
+    ///
+    /// - Note: Multiple calls while an animation is in progress should queue or
+    ///         interrupt gracefully without causing visual artifacts.
     func performAction(_ action: CharacterAction, completion: @escaping () -> Void)
 
     /// Update the character's position in AR space
-    /// - Parameter position: New position in world coordinates
-    func setPosition(_ position: SIMD3<Float>)
+    ///
+    /// This should smoothly transition to the new position if animated,
+    /// or snap instantly if the change is from external sync (SharePlay).
+    ///
+    /// - Parameters:
+    ///   - position: New position in 3D space (meters)
+    ///   - animated: Whether to animate the transition (default: true)
+    func setPosition(_ position: SIMD3<Float>, animated: Bool)
 
     /// Update the character's scale
-    /// - Parameter scale: New scale value (uniform scaling)
-    func setScale(_ scale: Float)
+    ///
+    /// - Parameters:
+    ///   - scale: New uniform scale factor (1.0 = original size)
+    ///   - animated: Whether to animate the transition (default: true)
+    func setScale(_ scale: Float, animated: Bool)
 
-    /// Clean up resources when character is removed
-    /// Use this to deallocate animations, textures, or other resources
+    /// Clean up resources when the character is removed
+    ///
+    /// This should:
+    /// - Stop all animations
+    /// - Remove the entity from its parent
+    /// - Release any retained resources (textures, audio, etc.)
+    /// - Cancel any pending operations
+    ///
+    /// After calling this method, the character should not be used again.
     func cleanup()
 }
 
+/// Default implementations for common operations
+extension AnimatableCharacter {
+    /// Default animated transitions enabled
+    func setPosition(_ position: SIMD3<Float>, animated: Bool = true) {
+        self.setPosition(position, animated: animated)
+    }
+
+    func setScale(_ scale: Float, animated: Bool = true) {
+        self.setScale(scale, animated: animated)
+    }
+}
+
+// MARK: - Character Factory
+
 /// Factory protocol for creating character instances
-/// Allows different implementations (placeholder vs. production 3D models)
+///
+/// Implementations of this protocol handle the creation of characters
+/// with their associated 3D models and resources. This abstraction allows
+/// for different loading strategies (e.g., loading from Reality Composer,
+/// procedural generation, or asset bundles).
 protocol CharacterFactory {
-    /// Create a new character instance
+    /// Create a new character instance of the specified type
+    ///
     /// - Parameters:
     ///   - type: The type of character to create
-    ///   - position: Initial position in AR space
-    ///   - scale: Initial scale
-    /// - Returns: A new character instance conforming to AnimatableCharacter
+    ///   - position: Initial position in 3D space
+    ///   - scale: Initial scale factor
+    ///
+    /// - Returns: A fully initialized character conforming to `AnimatableCharacter`
+    ///
+    /// - Note: This method may perform I/O operations and should be called
+    ///         from a background queue if loading is expensive.
     func createCharacter(
         type: CharacterType,
-        position: SIMD3<Float>,
-        scale: SIMD3<Float>
+        at position: SIMD3<Float>,
+        scale: Float
     ) -> AnimatableCharacter
 
     /// Returns the list of character types supported by this factory
-    /// - Returns: Array of supported CharacterType values
+    ///
+    /// This can be used by the UI to show only available characters
+    /// or to validate character types before creation.
     func supportedCharacterTypes() -> [CharacterType]
+
+    /// Preload resources for faster character creation
+    ///
+    /// This method can be called during app initialization to load
+    /// 3D models, textures, and animations into memory.
+    ///
+    /// - Parameter types: Character types to preload, or nil for all types
+    func preloadResources(for types: [CharacterType]?) async throws
 }
 
-/// Default factory implementation using the current Character class
-/// This can be replaced by a 3D asset factory later
-class DefaultCharacterFactory: CharacterFactory {
-    func createCharacter(
+// MARK: - Character State Sync
+
+/// Structure representing the syncable state of a character
+///
+/// Used for SharePlay synchronization to transmit character state
+/// across devices efficiently.
+struct CharacterSyncState: Codable, Equatable {
+    /// Character unique identifier
+    let id: UUID
+
+    /// Character type
+    let type: CharacterType
+
+    /// Current position in 3D space
+    let position: SIMD3<Float>
+
+    /// Current scale factor
+    let scale: Float
+
+    /// Current action being performed
+    let action: CharacterAction
+
+    /// Timestamp of this state update (for conflict resolution)
+    let timestamp: TimeInterval
+
+    /// Participant who owns/created this character
+    let ownerID: String?
+
+    init(
+        id: UUID,
         type: CharacterType,
-        position: SIMD3<Float> = [0, 0, -1],
-        scale: SIMD3<Float> = [1, 1, 1]
-    ) -> AnimatableCharacter {
-        return Character(type: type, position: position, scale: scale)
+        position: SIMD3<Float>,
+        scale: Float,
+        action: CharacterAction,
+        timestamp: TimeInterval = Date().timeIntervalSince1970,
+        ownerID: String? = nil
+    ) {
+        self.id = id
+        self.type = type
+        self.position = position
+        self.scale = scale
+        self.action = action
+        self.timestamp = timestamp
+        self.ownerID = ownerID
     }
 
-    func supportedCharacterTypes() -> [CharacterType] {
-        return CharacterType.allCases
+    /// Create sync state from an animatable character
+    static func from(_ character: AnimatableCharacter, ownerID: String? = nil) -> CharacterSyncState {
+        return CharacterSyncState(
+            id: character.id,
+            type: character.characterType,
+            position: character.position,
+            scale: character.scale,
+            action: character.currentAction,
+            ownerID: ownerID
+        )
     }
 }
 
-// MARK: - Extension: Default Implementations
+// MARK: - Codable Support for SIMD3
 
-extension AnimatableCharacter {
-    /// Convenience method for uniform scaling
-    func setScale(_ scale: Float) {
-        self.scale = SIMD3<Float>(repeating: scale)
+/// Codable wrapper for SIMD3<Float>
+extension SIMD3: Codable where Scalar == Float {
+    enum CodingKeys: String, CodingKey {
+        case x, y, z
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let x = try container.decode(Float.self, forKey: .x)
+        let y = try container.decode(Float.self, forKey: .y)
+        let z = try container.decode(Float.self, forKey: .z)
+        self.init(x, y, z)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.x, forKey: .x)
+        try container.encode(self.y, forKey: .y)
+        try container.encode(self.z, forKey: .z)
     }
 }

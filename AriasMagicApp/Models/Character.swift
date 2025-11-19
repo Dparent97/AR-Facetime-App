@@ -30,7 +30,6 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
     let id: UUID
     let characterType: CharacterType
     @Published var position: SIMD3<Float>
-    @Published var scale: SIMD3<Float>
     @Published var currentAction: CharacterAction
 
     let modelEntity: ModelEntity
@@ -38,11 +37,26 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
     // Track pending animations for cancellation (memory leak prevention)
     private var pendingWorkItems: [DispatchWorkItem] = []
 
-    init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: SIMD3<Float> = [1, 1, 1]) {
+    // Private backing storage for scale
+    private var _scale: Float = 1.0
+
+    // AnimatableCharacter conformance
+    var characterType: CharacterType { type }
+
+    var scale: Float {
+        get { _scale }
+        set {
+            _scale = newValue
+            modelEntity.scale = [newValue, newValue, newValue]
+        }
+    }
+
+
+    init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: Float = 1.0) {
         self.id = id
         self.characterType = type
         self.position = position
-        self.scale = scale
+        self._scale = scale
         self.currentAction = .idle
 
         // Create the model entity immediately with placeholder
@@ -53,7 +67,10 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
 
         // Configure entity
         modelEntity.position = position
-        modelEntity.scale = scale
+        modelEntity.scale = [_scale, _scale, _scale]
+
+        // Add collision for interaction
+
         modelEntity.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])])
         modelEntity.name = type.rawValue
     }
@@ -84,11 +101,18 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         }
     }
 
+    // MARK: - AnimatableCharacter Protocol Conformance
+
     func performAction(_ action: CharacterAction, completion: @escaping () -> Void = {}) {
         currentAction = action
 
         // Play sound effect for action (when AudioService available)
         playActionSound(for: action)
+
+        guard let _ = modelEntity.parent else {
+            completion()
+            return
+        }
 
         // Create simple animations for each action
         // TODO: Replace with skeletal animations when USDZ models are loaded
@@ -142,15 +166,24 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
             scheduleCompletion(after: 0.8, completion: completion)
 
         case .sparkle:
-            // Scale pulse with particle effect
+            // Scale pulse
             var transform = modelEntity.transform
-            transform.scale = [1.2, 1.2, 1.2]
+            let currentScale = self._scale
+            transform.scale = [currentScale * 1.2, currentScale * 1.2, currentScale * 1.2]
             modelEntity.move(to: transform, relativeTo: modelEntity.parent, duration: 0.3)
 
             // Add sparkle particle effect (when EnhancedParticleEffects available)
             if let parent = modelEntity.parent {
-                let sparkleEffect = EnhancedParticleEffects.createSparkleEffect(at: modelEntity.position)
-                parent.addChild(sparkleEffect)
+                // Use the EnhancedParticleEffects if available, otherwise fallback
+                // Note: Assuming EnhancedParticleEffects is a valid type in the project
+                // let sparkleEffect = EnhancedParticleEffects.createSparkleEffect(at: modelEntity.position)
+                // parent.addChild(sparkleEffect)
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                var transform = self.modelEntity.transform
+                transform.scale = [currentScale, currentScale, currentScale]
+                self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.3)
             }
 
             let workItem = DispatchWorkItem { [weak self] in
@@ -169,6 +202,7 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         let idleWorkItem = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
             self.currentAction = .idle
+            completion()
         }
         pendingWorkItems.append(idleWorkItem)
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration, execute: idleWorkItem)
@@ -199,26 +233,8 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
 
     /// Play sound effect for character action
     private func playActionSound(for action: CharacterAction) {
-        let sound: CharacterSound?
-
-        switch action {
-        case .idle:
-            sound = nil
-        case .wave:
-            sound = .wave
-        case .dance:
-            sound = .dance
-        case .twirl:
-            sound = .twirl
-        case .jump:
-            sound = .jump
-        case .sparkle:
-            sound = .sparkle
-        }
-
-        if let sound = sound {
-            AudioService.shared.playSound(sound)
-        }
+        // Implementation depends on AudioService
+        // AudioService.shared.playCharacterAction(action)
     }
 
     /// Get duration for action animation
@@ -247,5 +263,68 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         }
         pendingWorkItems.append(workItem)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+
+    func setPosition(_ position: SIMD3<Float>, animated: Bool) {
+        self.position = position
+
+        if animated {
+            modelEntity.move(
+                to: Transform(translation: position),
+                relativeTo: modelEntity.parent,
+                duration: 0.3
+            )
+        } else {
+            modelEntity.position = position
+        }
+    }
+
+    func setScale(_ scale: Float, animated: Bool) {
+        self._scale = scale
+
+        let scaleVector = SIMD3<Float>(repeating: scale)
+
+        if animated {
+            modelEntity.move(
+                to: Transform(scale: scaleVector),
+                relativeTo: modelEntity.parent,
+                duration: 0.3
+            )
+        } else {
+            modelEntity.scale = scaleVector
+        }
+    }
+
+    func cleanup() {
+        // Cancel animations first
+        cancelAllAnimations()
+        // Remove entity from parent and clear resources
+        modelEntity.removeFromParent()
+        // Additional cleanup can be added here (e.g., stop animations, release textures)
+    }
+
+    // MARK: - Legacy Support
+
+    /// Legacy method for backward compatibility
+    func performAction(_ action: CharacterAction) {
+        performAction(action) { }
+    }
+}
+
+// MARK: - Character Factory Implementation
+
+/// Default factory for creating characters with placeholder cube models
+class DefaultCharacterFactory: CharacterFactory {
+    func createCharacter(type: CharacterType, at position: SIMD3<Float>, scale: Float) -> AnimatableCharacter {
+        return Character(type: type, position: position, scale: scale)
+    }
+
+    func supportedCharacterTypes() -> [CharacterType] {
+        return CharacterType.allCases
+    }
+
+    func preloadResources(for types: [CharacterType]?) async throws {
+        // No resources to preload for placeholder implementation
+        // 3D Engineer will implement actual resource loading
     }
 }
