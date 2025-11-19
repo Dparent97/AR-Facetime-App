@@ -2,7 +2,7 @@
 //  OnboardingView.swift
 //  Aria's Magic SharePlay App
 //
-//  Simple onboarding for first launch
+//  Child-friendly onboarding for first launch
 //
 
 import SwiftUI
@@ -10,100 +10,187 @@ import SwiftUI
 struct OnboardingView: View {
     @Binding var isPresented: Bool
     @State private var currentPage = 0
+    @State private var showSkipButton = false
 
     let pages = [
         OnboardingPage(
+            emoji: "👸",
+            title: "Welcome to Aria's Magic World!",
+            description: "Meet magical princess friends who love to play!",
+            gradientColors: [Color.purple, Color.pink]
+        ),
+        OnboardingPage(
             emoji: "✨",
-            title: "Welcome to Magic World!",
-            description: "Tap anywhere to spawn magical princess characters"
+            title: "Tap to Bring Princesses to Life!",
+            description: "Choose your favorite princess, then tap anywhere to make her appear. You can move her around and make her bigger or smaller!",
+            gradientColors: [Color.pink, Color.orange]
         ),
         OnboardingPage(
             emoji: "😊",
-            title: "Smile for Magic!",
-            description: "Smile to create sparkles\nRaise your eyebrows to wave\nOpen your mouth to jump"
+            title: "Your Face is Magic!",
+            description: "😊 Smile → Sparkles appear!\n😮 Open mouth → Princess jumps!\n🤨 Raise eyebrows → Princess waves!",
+            gradientColors: [Color.orange, Color.yellow]
         ),
         OnboardingPage(
             emoji: "🎭",
-            title: "Make Them Dance!",
-            description: "Use the buttons to make your characters wave, dance, twirl, and jump"
+            title: "Make Them Dance & Play!",
+            description: "Tap the colorful buttons to make your princesses wave, dance, twirl, and jump. Add sparkles, snow, or bubbles too!",
+            gradientColors: [Color.cyan, Color.blue]
         ),
         OnboardingPage(
-            emoji: "👯",
-            title: "Share with FaceTime!",
-            description: "Use SharePlay during FaceTime to share the magic together"
+            emoji: "📱",
+            title: "Share the Magic on FaceTime!",
+            description: "Play together with friends during FaceTime! Your princesses will appear in both screens at the same time!",
+            gradientColors: [Color.blue, Color.purple]
         )
     ]
 
     var body: some View {
         ZStack {
+            // Animated gradient background
             LinearGradient(
-                gradient: Gradient(colors: [.purple, .pink]),
+                gradient: Gradient(colors: pages[currentPage].gradientColors),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
+            .animation(.easeInOut(duration: 0.5), value: currentPage)
 
-            VStack(spacing: 30) {
+            VStack(spacing: 0) {
+                // Skip button
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        HapticManager.shared.trigger(.light)
+                        withAnimation {
+                            isPresented = false
+                        }
+                    }) {
+                        Text("Skip")
+                            .font(.body)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                    }
+                }
+                .padding(.top, 50)
+                .padding(.horizontal, 20)
+                .opacity(showSkipButton ? 1 : 0)
+
                 Spacer()
 
-                Text(pages[currentPage].emoji)
-                    .font(.system(size: 100))
+                // Main content
+                VStack(spacing: 24) {
+                    // Emoji with bounce animation
+                    Text(pages[currentPage].emoji)
+                        .font(.system(size: 120))
+                        .scaleEffect(1.0)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.6), value: currentPage)
 
-                Text(pages[currentPage].title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
+                    // Title
+                    Text(pages[currentPage].title)
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 30)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                Text(pages[currentPage].description)
-                    .font(.body)
-                    .foregroundColor(.white.opacity(0.9))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                    // Description
+                    Text(pages[currentPage].description)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.white.opacity(0.95))
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(6)
+                        .padding(.horizontal, 40)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
+                .id(currentPage)
 
                 Spacer()
 
                 // Page indicator
-                HStack(spacing: 8) {
+                HStack(spacing: 10) {
                     ForEach(0..<pages.count, id: \.self) { index in
-                        Circle()
+                        RoundedRectangle(cornerRadius: 4)
                             .fill(currentPage == index ? Color.white : Color.white.opacity(0.4))
-                            .frame(width: 8, height: 8)
+                            .frame(width: currentPage == index ? 24 : 8, height: 8)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: currentPage)
                     }
                 }
+                .padding(.bottom, 30)
 
                 // Navigation buttons
                 HStack(spacing: 20) {
+                    // Back button
                     if currentPage > 0 {
-                        Button("Back") {
-                            withAnimation {
+                        Button(action: {
+                            HapticManager.shared.trigger(.light)
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                 currentPage -= 1
                             }
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Back")
+                                    .font(.system(size: 18, weight: .semibold))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 14)
+                            .background(Color.white.opacity(0.2))
+                            .cornerRadius(25)
                         }
-                        .foregroundColor(.white)
-                        .padding()
+                    } else {
+                        Spacer()
+                            .frame(width: 100)
                     }
 
                     Spacer()
 
-                    Button(currentPage == pages.count - 1 ? "Start Magic!" : "Next") {
-                        withAnimation {
+                    // Next/Start button
+                    Button(action: {
+                        HapticManager.shared.trigger(.medium)
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                             if currentPage == pages.count - 1 {
+                                HapticManager.shared.trigger(.success)
                                 isPresented = false
                             } else {
                                 currentPage += 1
                             }
                         }
+                    }) {
+                        HStack(spacing: 8) {
+                            Text(currentPage == pages.count - 1 ? "Start the Magic! ✨" : "Next")
+                                .font(.system(size: 18, weight: .bold))
+                            if currentPage < pages.count - 1 {
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                        }
+                        .foregroundColor(pages[currentPage].gradientColors[0])
+                        .padding(.horizontal, currentPage == pages.count - 1 ? 32 : 28)
+                        .padding(.vertical, 16)
+                        .background(Color.white)
+                        .cornerRadius(28)
+                        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
                     }
-                    .fontWeight(.bold)
-                    .foregroundColor(.purple)
-                    .padding(.horizontal, 30)
-                    .padding(.vertical, 15)
-                    .background(Color.white)
-                    .cornerRadius(25)
                 }
                 .padding(.horizontal, 30)
-                .padding(.bottom, 50)
+                .padding(.bottom, 60)
+            }
+        }
+        .onAppear {
+            // Show skip button after a delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                withAnimation {
+                    showSkipButton = true
+                }
             }
         }
     }
@@ -113,6 +200,7 @@ struct OnboardingPage {
     let emoji: String
     let title: String
     let description: String
+    let gradientColors: [Color]
 }
 
 #Preview {
