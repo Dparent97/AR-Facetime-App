@@ -2,30 +2,27 @@
 //  CharacterPickerView.swift
 //  Aria's Magic SharePlay App
 //
-//  Character selection UI with card-based horizontal picker
+//  Character selection UI with beautiful cards
 //
 
 import SwiftUI
 
-/// Card-based character picker for selecting which princess to spawn
 struct CharacterPickerView: View {
     @ObservedObject var viewModel: CharacterViewModel
 
-    // Character card data
-    private let characterTypes = CharacterType.allCases
+    let characterTypes = CharacterType.allCases
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Title
             Text("Choose Your Princess")
-                .font(.headline)
-                .fontWeight(.bold)
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.white)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
-                .accessibilityAddTraits(.isHeader)
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
 
-            // Horizontal card scroll
+            // Character cards
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(characterTypes, id: \.self) { type in
@@ -34,112 +31,98 @@ struct CharacterPickerView: View {
                             isSelected: viewModel.selectedCharacterType == type
                         )
                         .onTapGesture {
-                            selectCharacter(type)
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                viewModel.selectedCharacterType = type
+                                HapticManager.shared.trigger(.selection)
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
             }
-            .frame(height: 190)
         }
         .background(
             LinearGradient(
-                colors: [
+                gradient: Gradient(colors: [
                     Color.purple.opacity(0.8),
-                    Color.pink.opacity(0.6)
-                ],
+                    Color.pink.opacity(0.8)
+                ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .ignoresSafeArea(edges: .bottom)
+            .cornerRadius(20)
+            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         )
-    }
-
-    // MARK: - Actions
-
-    private func selectCharacter(_ type: CharacterType) {
-        // Haptic feedback for selection
-        HapticManager.shared.characterSelected()
-
-        // Animate selection change
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            viewModel.selectedCharacterType = type
-        }
+        .padding(.horizontal, 16)
     }
 }
 
-// MARK: - Character Card
-
-/// Individual character card with preview and selection state
 struct CharacterCard: View {
     let type: CharacterType
     let isSelected: Bool
 
     var body: some View {
         VStack(spacing: 8) {
-            // Character preview (colored circle placeholder)
+            // Character preview
             ZStack {
+                // Background circle
                 Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: gradientColors,
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        Circle()
-                            .strokeBorder(
-                                isSelected ? Color.white : Color.white.opacity(0.3),
-                                lineWidth: isSelected ? 4 : 2
-                            )
-                    )
-                    .shadow(
-                        color: isSelected ? Color.white.opacity(0.5) : Color.black.opacity(0.2),
-                        radius: isSelected ? 12 : 6,
-                        x: 0,
-                        y: isSelected ? 4 : 2
-                    )
+                    .fill(characterColor.opacity(0.3))
+                    .frame(width: 80, height: 80)
 
-                // Character initial or emoji
+                // Character placeholder (will be replaced with actual images)
                 Text(characterEmoji)
-                    .font(.system(size: 50))
+                    .font(.system(size: 40))
             }
+            .overlay(
+                Circle()
+                    .strokeBorder(
+                        isSelected ? characterColor : Color.white.opacity(0.3),
+                        lineWidth: isSelected ? 4 : 2
+                    )
+                    .frame(width: 84, height: 84)
+            )
 
             // Character name
-            Text(characterName)
-                .font(.caption)
-                .fontWeight(isSelected ? .bold : .semibold)
+            Text(shortName)
+                .font(.system(size: 14, weight: isSelected ? .bold : .semibold))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
-                .frame(width: 100)
                 .lineLimit(2)
+                .frame(width: 100)
         }
-        .frame(width: 120)
+        .frame(width: 120, height: 150)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(isSelected ? Color.white.opacity(0.2) : Color.white.opacity(0.1))
+        )
         .scaleEffect(isSelected ? 1.1 : 1.0)
-        .opacity(isSelected ? 1.0 : 0.75)
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(characterName), character card")
-        .accessibilityHint(isSelected ? "Selected" : "Tap to select this character")
-        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : [.isButton])
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
+        // Accessibility
+        .accessibilityLabel("\(type.rawValue), \(isSelected ? "selected" : "not selected")")
+        .accessibilityHint("Tap to select this character")
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
-    // MARK: - Character Properties
-
-    private var characterName: String {
-        // Extract just the first name for cleaner UI
-        let fullName = type.rawValue
-        if let firstName = fullName.components(separatedBy: " ").first {
-            return firstName
+    // Character-specific colors
+    private var characterColor: Color {
+        switch type {
+        case .sparkleThePrincess:
+            return Color(red: 1.0, green: 0.4, blue: 0.8) // Pink
+        case .lunaTheStarDancer:
+            return Color(red: 0.6, green: 0.4, blue: 1.0) // Purple
+        case .rosieTheDreamWeaver:
+            return Color(red: 1.0, green: 0.2, blue: 0.4) // Red
+        case .crystalTheGemKeeper:
+            return Color(red: 0.2, green: 0.8, blue: 1.0) // Cyan
+        case .willowTheWishMaker:
+            return Color(red: 0.2, green: 1.0, blue: 0.6) // Green
         }
-        return fullName
     }
 
+    // Character emojis (placeholders until 3D renders are ready)
     private var characterEmoji: String {
-        // Emoji representation for each character
         switch type {
         case .sparkleThePrincess:
             return "✨"
@@ -154,35 +137,19 @@ struct CharacterCard: View {
         }
     }
 
-    private var gradientColors: [Color] {
-        // Gradient colors matching character themes
+    // Shortened names for better display
+    private var shortName: String {
         switch type {
         case .sparkleThePrincess:
-            return [Color(red: 1.0, green: 0.4, blue: 0.8), Color(red: 1.0, green: 0.6, blue: 0.9)]
+            return "Sparkle"
         case .lunaTheStarDancer:
-            return [Color(red: 0.5, green: 0.3, blue: 1.0), Color(red: 0.7, green: 0.5, blue: 1.0)]
+            return "Luna"
         case .rosieTheDreamWeaver:
-            return [Color(red: 1.0, green: 0.2, blue: 0.4), Color(red: 1.0, green: 0.4, blue: 0.5)]
+            return "Rosie"
         case .crystalTheGemKeeper:
-            return [Color(red: 0.2, green: 0.7, blue: 1.0), Color(red: 0.4, green: 0.9, blue: 1.0)]
+            return "Crystal"
         case .willowTheWishMaker:
-            return [Color(red: 0.2, green: 1.0, blue: 0.6), Color(red: 0.4, green: 1.0, blue: 0.7)]
+            return "Willow"
         }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    CharacterPickerView(viewModel: CharacterViewModel())
-        .previewLayout(.sizeThatFits)
-}
-
-#Preview("Selected States") {
-    VStack(spacing: 20) {
-        CharacterCard(type: .sparkleThePrincess, isSelected: true)
-        CharacterCard(type: .lunaTheStarDancer, isSelected: false)
-    }
-    .padding()
-    .background(Color.purple)
 }

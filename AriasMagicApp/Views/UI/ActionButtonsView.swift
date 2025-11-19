@@ -30,10 +30,9 @@ struct ActionButtonsView: View {
                     MagicButton(
                         emoji: effect.emoji,
                         label: effect.rawValue.capitalized,
-                        colors: gradientForEffect(effect),
-                        isPressed: pressedButton == effect.rawValue,
-                        isEnabled: hasCharacters,
-                        isActive: viewModel.activeEffect == effect
+                        gradient: effectGradient(for: effect),
+                        isActive: viewModel.activeEffect == effect,
+                        isEnabled: !viewModel.characters.isEmpty
                     ) {
                         triggerEffect(effect)
                     }
@@ -49,10 +48,9 @@ struct ActionButtonsView: View {
                     MagicButton(
                         emoji: emoji,
                         label: label,
-                        colors: gradientForAction(action),
-                        isPressed: pressedButton == label,
-                        isEnabled: hasCharacters,
-                        isActive: false
+                        gradient: actionGradient(for: action),
+                        isActive: false,
+                        isEnabled: !viewModel.characters.isEmpty
                     ) {
                         performAction(action)
                     }
@@ -76,91 +74,70 @@ struct ActionButtonsView: View {
 
     private func performAction(_ action: CharacterAction) {
         guard hasCharacters else {
-            // Provide feedback that action isn't available
             HapticManager.shared.limitReached()
             return
         }
 
-        // Haptic feedback
         HapticManager.shared.actionPerformed()
-
-        // Visual feedback
-        pressedButton = action.rawValue
-        withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) {
-            pressedButton = nil
-        }
-
-        // Perform the action
         viewModel.performAction(action)
     }
 
     private func triggerEffect(_ effect: MagicEffect) {
         guard hasCharacters else {
-            // Provide feedback that effect isn't available
             HapticManager.shared.limitReached()
             return
         }
 
-        // Haptic feedback
         HapticManager.shared.effectTriggered()
-
-        // Visual feedback
-        pressedButton = effect.rawValue
-        withAnimation(.spring(response: 0.2, dampingFraction: 0.6)) {
-            pressedButton = nil
-        }
-
-        // Trigger the effect
         viewModel.triggerEffect(effect)
     }
 
-    // MARK: - Color Schemes
+    // MARK: - Gradients
 
-    private func gradientForEffect(_ effect: MagicEffect) -> [Color] {
+    private func effectGradient(for effect: MagicEffect) -> LinearGradient {
         switch effect {
         case .sparkles:
-            return [Color(red: 1.0, green: 0.8, blue: 0.2), Color(red: 1.0, green: 0.6, blue: 0.0)]
+            return LinearGradient(colors: [Color.yellow, Color.orange], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .snow:
-            return [Color(red: 0.7, green: 0.9, blue: 1.0), Color(red: 0.5, green: 0.7, blue: 1.0)]
+            return LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .bubbles:
-            return [Color(red: 0.4, green: 0.8, blue: 1.0), Color(red: 0.2, green: 0.6, blue: 1.0)]
+            return LinearGradient(colors: [Color.mint, Color.teal], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 
-    private func gradientForAction(_ action: CharacterAction) -> [Color] {
+    private func actionGradient(for action: CharacterAction) -> LinearGradient {
         switch action {
         case .wave:
-            return [Color(red: 1.0, green: 0.4, blue: 0.8), Color(red: 0.9, green: 0.2, blue: 0.6)]
+            return LinearGradient(colors: [Color.pink, Color.purple], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .dance:
-            return [Color(red: 0.8, green: 0.3, blue: 1.0), Color(red: 0.6, green: 0.2, blue: 0.9)]
+            return LinearGradient(colors: [Color.red, Color.pink], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .twirl:
-            return [Color(red: 1.0, green: 0.3, blue: 0.5), Color(red: 0.9, green: 0.1, blue: 0.4)]
+            return LinearGradient(colors: [Color.purple, Color.indigo], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .jump:
-            return [Color(red: 1.0, green: 0.5, blue: 0.3), Color(red: 1.0, green: 0.3, blue: 0.2)]
+            return LinearGradient(colors: [Color.orange, Color.red], startPoint: .topLeading, endPoint: .bottomTrailing)
         default:
-            return [Color.pink, Color.purple]
+            return LinearGradient(colors: [Color.gray, Color.gray.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
 }
 
 // MARK: - Magic Button Component
 
-/// Reusable button component with delightful animations and feedback
 struct MagicButton: View {
     let emoji: String
     let label: String
-    let colors: [Color]
-    let isPressed: Bool
-    let isEnabled: Bool
+    let gradient: LinearGradient
     let isActive: Bool
+    let isEnabled: Bool
     let action: () -> Void
 
     @State private var isPressing = false
 
     var body: some View {
         Button(action: {
-            guard isEnabled else { return }
-            action()
+            if isEnabled {
+                action()
+            }
         }) {
             VStack(spacing: 4) {
                 Text(emoji)
@@ -171,11 +148,8 @@ struct MagicButton: View {
             }
             .frame(width: 75, height: 75)
             .background(
-                LinearGradient(
-                    colors: isEnabled ? colors : [Color.gray.opacity(0.3), Color.gray.opacity(0.2)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                gradient
+                    .opacity(isEnabled ? 1.0 : 0.5)
             )
             .foregroundColor(.white)
             .cornerRadius(18)
@@ -190,18 +164,13 @@ struct MagicButton: View {
                 y: isPressing ? 1 : 3
             )
             .scaleEffect(isPressing ? 0.95 : (isActive ? 1.05 : 1.0))
-            .opacity(isEnabled ? 1.0 : 0.4)
             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressing)
-            .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: isActive)
         }
         .buttonStyle(PressableButtonStyle(isPressing: $isPressing))
         .disabled(!isEnabled)
     }
 }
 
-// MARK: - Button Style with Press Detection
-
-/// Custom button style that provides press state feedback
 struct PressableButtonStyle: ButtonStyle {
     @Binding var isPressing: Bool
 
@@ -211,30 +180,4 @@ struct PressableButtonStyle: ButtonStyle {
                 isPressing = newValue
             }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    ZStack {
-        Color.purple.opacity(0.1).ignoresSafeArea()
-        VStack {
-            Spacer()
-            ActionButtonsView(viewModel: CharacterViewModel())
-        }
-    }
-}
-
-#Preview("Single Button") {
-    MagicButton(
-        emoji: "✨",
-        label: "Sparkles",
-        colors: [Color.yellow, Color.orange],
-        isPressed: false,
-        isEnabled: true,
-        isActive: false
-    ) {
-        print("Button tapped")
-    }
-    .padding()
 }

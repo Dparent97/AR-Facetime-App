@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var showOnboarding = true
     @State private var showErrorAlert = false
     @State private var currentAlert: ErrorAlert?
+    @State private var showSettings = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -39,12 +40,25 @@ struct ContentView: View {
 
                     Spacer()
 
-                    if sharePlayService.isActive {
-                        Image(systemName: "person.2.fill")
-                            .foregroundColor(.green)
-                            .padding(8)
-                            .background(Color.white.opacity(0.9))
-                            .clipShape(Circle())
+                    HStack(spacing: 12) {
+                        if sharePlayService.isActive {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(.green)
+                                .padding(8)
+                                .background(Color.white.opacity(0.9))
+                                .clipShape(Circle())
+                        }
+
+                        Button {
+                            HapticManager.shared.trigger(.light)
+                            showSettings = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundColor(.white)
+                                .padding(8)
+                                .background(Color.black.opacity(0.3))
+                                .clipShape(Circle())
+                        }
                     }
                 }
                 .padding()
@@ -53,6 +67,7 @@ struct ContentView: View {
 
                 // Character picker
                 CharacterPickerView(viewModel: characterViewModel)
+                    .padding(.bottom, 12)
 
                 // Action buttons
                 ActionButtonsView(viewModel: characterViewModel)
@@ -61,6 +76,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView(isPresented: $showOnboarding)
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
         .alert(item: $currentAlert) { alert in
             Alert(
@@ -86,6 +104,9 @@ struct ContentView: View {
             sharePlayService.onError = { error in
                 handleError(error)
             }
+            
+            // Connect SharePlay service to view model
+            characterViewModel.setSharePlayService(sharePlayService)
         }
     }
 
