@@ -24,6 +24,27 @@ class CharacterViewModel: ObservableObject {
 
         // Start with one default character
         spawnCharacter(at: [0, 0, -0.5])
+
+        // Start audio monitoring for clap detection
+        setupAudioMonitoring()
+    }
+
+    private func setupAudioMonitoring() {
+        AudioService.shared.loudNoiseDetected
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.handleLoudNoise()
+            }
+            .store(in: &cancellables)
+            
+        // Start the microphone
+        AudioService.shared.startMicrophoneMonitoring()
+    }
+    
+    private func handleLoudNoise() {
+        // Trigger jump action on all characters
+        performAction(.jump)
+        print("👏 Clap detected! Jumping!")
     }
 
     func handleError(_ error: AppError) {

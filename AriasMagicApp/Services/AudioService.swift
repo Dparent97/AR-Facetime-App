@@ -55,6 +55,9 @@ class AudioService: ObservableObject {
         }
     }
 
+    /// Published subject for loud noise detection (e.g. claps)
+    let loudNoiseDetected = PassthroughSubject<Void, Never>()
+
     // MARK: - Private Properties
 
     /// Audio engine for low-latency playback
@@ -130,6 +133,49 @@ class AudioService: ObservableObject {
             isEngineRunning = true
         } catch {
             print("⚠️ AudioService: Failed to start audio engine: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - Microphone Monitoring (Clap Detection)
+
+    /// Start monitoring microphone for loud noises (claps)
+    func startMicrophoneMonitoring() {
+        guard isEngineRunning else { return }
+
+        let inputNode = audioEngine.inputNode
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+
+        // Install tap on input node
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, time) in
+            self?.analyzeAudioBuffer(buffer)
+        }
+
+        print("🎤 AudioService: Microphone monitoring started")
+    }
+
+    /// Stop monitoring microphone
+    func stopMicrophoneMonitoring() {
+        audioEngine.inputNode.removeTap(onBus: 0)
+        print("🎤 AudioService: Microphone monitoring stopped")
+    }
+
+    private func analyzeAudioBuffer(_ buffer: AVAudioPCMBuffer) {
+        guard let channelData = buffer.floatChannelData else { return }
+
+        let channelDataValue = channelData.pointee
+        let channelDataValueArray = stride(from: 0, to: Int(buffer.frameLength), by: buffer.stride).map { channelDataValue[$0] }
+
+        // Calculate RMS (Root Mean Square) amplitude
+        let rms = sqrt(channelDataValueArray.map { $0 * $0 }.reduce(0, +) / Float(buffer.frameLength))
+
+        // Threshold for clap detection (adjustable)
+        let clapThreshold: Float = 0.5
+
+        if rms > clapThreshold {
+            // Debounce slightly
+            DispatchQueue.main.async { [weak self] in
+                self?.loudNoiseDetected.send()
+            }
         }
     }
 
