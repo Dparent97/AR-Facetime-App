@@ -37,6 +37,9 @@ class FaceTrackingService {
     private let maxConsecutiveErrors: Int = 5
     private var isDisabled: Bool = false
 
+    // Tracking state (for lifecycle management)
+    private var isTrackingActive: Bool = true
+
     init(delegate: FaceTrackingDelegate? = nil) {
         self.delegate = delegate
         ErrorLoggingService.shared.logger.info("FaceTrackingService initialized")
@@ -45,6 +48,9 @@ class FaceTrackingService {
     func processFaceAnchor(_ faceAnchor: ARFaceAnchor) {
         // Check if service is disabled due to too many errors
         guard !isDisabled else { return }
+
+        // Don't process if tracking is paused
+        guard isTrackingActive else { return }
 
         do {
             // Validate face anchor data
@@ -133,6 +139,16 @@ class FaceTrackingService {
         DispatchQueue.main.async {
             self.delegate?.didDetectExpression(expression)
         }
+    }
+
+    // MARK: - Lifecycle Management
+
+    func pauseTracking() {
+        isTrackingActive = false
+    }
+
+    func resumeTracking() {
+        isTrackingActive = true
     }
 }
 

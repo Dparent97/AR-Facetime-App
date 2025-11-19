@@ -12,6 +12,7 @@ import ARKit
 struct MagicARView: UIViewRepresentable {
     @ObservedObject var viewModel: CharacterViewModel
     var onError: ((AppError) -> Void)?
+    var isActive: Bool = true  // Control AR session state
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
@@ -53,6 +54,18 @@ struct MagicARView: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {
         // Update characters in scene based on view model
         context.coordinator.updateCharacters()
+
+        // Handle AR session lifecycle based on isActive state
+        if isActive {
+            context.coordinator.resumeARSession()
+        } else {
+            context.coordinator.pauseARSession()
+        }
+    }
+
+    static func dismantleUIView(_ uiView: ARView, coordinator: Coordinator) {
+        // Stop AR session when view is removed
+        coordinator.stopARSession()
     }
 
     func makeCoordinator() -> Coordinator {
@@ -133,6 +146,13 @@ struct MagicARView: UIViewRepresentable {
                 self.onError?(error)
                 self.viewModel.handleError(error)
             }
+        }
+
+        deinit {
+            // Clean up AR session and resources
+            stopARSession()
+            arView?.session.delegate = nil
+            faceTrackingService = nil
         }
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -229,6 +249,36 @@ struct MagicARView: UIViewRepresentable {
             } catch {
                 ErrorLoggingService.shared.logSwiftError(error, context: "AR session restart after interruption failed")
             }
+        }
+
+        // MARK: - AR Session Lifecycle Management
+
+        func pauseARSession() {
+            guard let arView = arView else { return }
+            // Pause the AR session to conserve battery
+            arView.session.pause()
+            // Pause face tracking
+            faceTrackingService?.pauseTracking()
+        }
+
+        func resumeARSession() {
+            guard let arView = arView else { return }
+            // Configure and run AR session
+            do {
+                try configureARSession(arView)
+            } catch {
+                ErrorLoggingService.shared.logSwiftError(error, context: "AR session resume failed")
+            }
+            // Resume face tracking
+            faceTrackingService?.resumeTracking()
+        }
+
+        func stopARSession() {
+            guard let arView = arView else { return }
+            // Completely stop the AR session
+            arView.session.pause()
+            // Stop face tracking
+            faceTrackingService?.pauseTracking()
         }
     }
 }

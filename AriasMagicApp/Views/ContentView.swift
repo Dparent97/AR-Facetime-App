@@ -13,14 +13,19 @@ struct ContentView: View {
     @State private var showOnboarding = true
     @State private var showErrorAlert = false
     @State private var currentAlert: ErrorAlert?
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack {
             // AR View (main background)
-            MagicARView(viewModel: characterViewModel) { error in
-                handleError(error)
-            }
-            .edgesIgnoringSafeArea(.all)
+            MagicARView(
+                viewModel: characterViewModel,
+                onError: { error in
+                    handleError(error)
+                },
+                isActive: scenePhase == .active
+            )
+                .edgesIgnoringSafeArea(.all)
 
             // UI Overlay
             VStack {
