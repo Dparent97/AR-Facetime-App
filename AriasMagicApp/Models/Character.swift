@@ -26,20 +26,34 @@ enum CharacterAction: String, Codable {
     case sparkle
 }
 
-class Character: Identifiable, ObservableObject {
+class Character: Identifiable, ObservableObject, AnimatableCharacter {
     let id: UUID
     let type: CharacterType
     @Published var position: SIMD3<Float>
-    @Published var scale: SIMD3<Float>
     @Published var currentAction: CharacterAction
+
+    // Private backing storage for scale
+    private var _scale: Float = 1.0
+
+    // AnimatableCharacter conformance
+    var characterType: CharacterType { type }
+    var modelEntity: ModelEntity { entity! }
+
+    var scale: Float {
+        get { _scale }
+        set {
+            _scale = newValue
+            entity?.scale = [newValue, newValue, newValue]
+        }
+    }
 
     var entity: ModelEntity?
 
-    init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: SIMD3<Float> = [1, 1, 1]) {
+    init(id: UUID = UUID(), type: CharacterType, position: SIMD3<Float> = [0, 0, -1], scale: Float = 1.0) {
         self.id = id
         self.type = type
         self.position = position
-        self.scale = scale
+        self._scale = scale
         self.currentAction = .idle
 
         createEntity()
@@ -52,7 +66,7 @@ class Character: Identifiable, ObservableObject {
         let modelEntity = ModelEntity(mesh: mesh, materials: [material])
 
         modelEntity.position = position
-        modelEntity.scale = scale
+        modelEntity.scale = [_scale, _scale, _scale]
 
         // Add collision for interaction
         modelEntity.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])])
@@ -75,15 +89,21 @@ class Character: Identifiable, ObservableObject {
         }
     }
 
-    func performAction(_ action: CharacterAction) {
+    // MARK: - AnimatableCharacter Protocol Conformance
+
+    func performAction(_ action: CharacterAction, completion: @escaping () -> Void) {
         currentAction = action
 
-        guard let entity = entity else { return }
+        guard let entity = entity else {
+            completion()
+            return
+        }
 
         // Create simple animations for each action
         switch action {
         case .idle:
-            break
+            completion()
+            return
 
         case .wave:
             // Simple rotation animation
@@ -120,18 +140,84 @@ class Character: Identifiable, ObservableObject {
         case .sparkle:
             // Scale pulse
             var transform = entity.transform
-            transform.scale = [1.2, 1.2, 1.2]
+            let currentScale = self._scale
+            transform.scale = [currentScale * 1.2, currentScale * 1.2, currentScale * 1.2]
             entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                transform.scale = [1, 1, 1]
+                transform.scale = [currentScale, currentScale, currentScale]
                 entity.move(to: transform, relativeTo: entity.parent, duration: 0.3)
             }
         }
 
-        // Reset to idle after animation
+        // Reset to idle after animation and call completion
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.currentAction = .idle
+            completion()
         }
+    }
+
+    func setPosition(_ position: SIMD3<Float>, animated: Bool) {
+        self.position = position
+
+        guard let entity = entity else { return }
+
+        if animated {
+            entity.move(
+                to: Transform(translation: position),
+                relativeTo: entity.parent,
+                duration: 0.3
+            )
+        } else {
+            entity.position = position
+        }
+    }
+
+    func setScale(_ scale: Float, animated: Bool) {
+        self._scale = scale
+
+        guard let entity = entity else { return }
+
+        let scaleVector = SIMD3<Float>(repeating: scale)
+
+        if animated {
+            entity.move(
+                to: Transform(scale: scaleVector),
+                relativeTo: entity.parent,
+                duration: 0.3
+            )
+        } else {
+            entity.scale = scaleVector
+        }
+    }
+
+    func cleanup() {
+        entity?.removeFromParent()
+        entity = nil
+    }
+
+    // MARK: - Legacy Support
+
+    /// Legacy method for backward compatibility
+    func performAction(_ action: CharacterAction) {
+        performAction(action) { }
+    }
+}
+
+// MARK: - Character Factory Implementation
+
+/// Default factory for creating characters with placeholder cube models
+class DefaultCharacterFactory: CharacterFactory {
+    func createCharacter(type: CharacterType, at position: SIMD3<Float>, scale: Float) -> AnimatableCharacter {
+        return Character(type: type, position: position, scale: scale)
+    }
+
+    func supportedCharacterTypes() -> [CharacterType] {
+        return CharacterType.allCases
+    }
+
+    func preloadResources(for types: [CharacterType]?) async throws {
+        // No resources to preload for placeholder implementation
+        // 3D Engineer will implement actual resource loading
     }
 }
