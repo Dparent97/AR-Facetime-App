@@ -112,11 +112,12 @@ class AudioService: ObservableObject {
         do {
             let audioSession = AVAudioSession.sharedInstance()
 
-            // Configure for ambient playback (mix with other audio)
+            // Configure for play and record (allow mixing)
+            // This enables both background music/sound effects and microphone input
             try audioSession.setCategory(
-                .ambient,
+                .playAndRecord,
                 mode: .default,
-                options: [.mixWithOthers]
+                options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth]
             )
 
             try audioSession.setActive(true)
@@ -142,15 +143,34 @@ class AudioService: ObservableObject {
     func startMicrophoneMonitoring() {
         guard isEngineRunning else { return }
 
-        let inputNode = audioEngine.inputNode
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        let audioSession = AVAudioSession.sharedInstance()
+        
+        // Request permission first
+        audioSession.requestRecordPermission { [weak self] granted in
+            guard let self = self, granted else {
+                print("⚠️ AudioService: Microphone permission denied")
+                return
+            }
+            
+            // Configure session again to ensure correct category if it wasn't set
+            self.configureAudioSession()
+            
+            // Dispatch to main queue or audio queue for thread safety
+            self.audioQueue.async {
+                let inputNode = self.audioEngine.inputNode
+                let recordingFormat = inputNode.outputFormat(forBus: 0)
+                
+                // Remove existing tap if any
+                inputNode.removeTap(onBus: 0)
 
-        // Install tap on input node
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, time) in
-            self?.analyzeAudioBuffer(buffer)
+                // Install tap on input node
+                inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, time) in
+                    self?.analyzeAudioBuffer(buffer)
+                }
+
+                print("🎤 AudioService: Microphone monitoring started")
+            }
         }
-
-        print("🎤 AudioService: Microphone monitoring started")
     }
 
     /// Stop monitoring microphone

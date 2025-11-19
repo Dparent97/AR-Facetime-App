@@ -73,3 +73,11 @@ iOSInjectionProject/
 # Environment files
 .env
 .env.*
+
+# Multi-Agent Workflow
+metrics.json
+quality_audit_report.txt
+merge_order.txt
+merge_order.json
+DASHBOARD.md
+.coverage.json

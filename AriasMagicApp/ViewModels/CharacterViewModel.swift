@@ -62,6 +62,14 @@ class CharacterViewModel: ObservableObject {
     func setSharePlayService(_ service: SharePlayService) {
         self.sharePlayService = service
         service.delegate = self
+        syncExistingCharactersToSharePlay()
+    }
+
+    private func syncExistingCharactersToSharePlay() {
+        guard let service = sharePlayService else { return }
+        for character in characters {
+            service.sendCharacterSpawned(character)
+        }
     }
 
     func spawnCharacter(at position: SIMD3<Float>) {

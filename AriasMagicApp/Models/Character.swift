@@ -31,6 +31,7 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
     let characterType: CharacterType
     @Published var position: SIMD3<Float>
     @Published var currentAction: CharacterAction
+    @Published var isHidden: Bool = false
 
     let modelEntity: ModelEntity
 
@@ -68,6 +69,7 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
         // Configure entity
         modelEntity.position = position
         modelEntity.scale = [_scale, _scale, _scale]
+        modelEntity.isEnabled = !isHidden
 
         // Add collision for interaction
 
@@ -180,16 +182,10 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
                 // parent.addChild(sparkleEffect)
             }
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                var transform = self.modelEntity.transform
-                transform.scale = [currentScale, currentScale, currentScale]
-                self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.3)
-            }
-
             let workItem = DispatchWorkItem { [weak self] in
                 guard let self = self else { return }
                 var transform = self.modelEntity.transform
-                transform.scale = [1, 1, 1]
+                transform.scale = [currentScale, currentScale, currentScale]
                 self.modelEntity.move(to: transform, relativeTo: self.modelEntity.parent, duration: 0.3)
             }
             pendingWorkItems.append(workItem)
@@ -210,24 +206,9 @@ class Character: Identifiable, ObservableObject, AnimatableCharacter {
 
     // MARK: - AnimatableCharacter Protocol Methods
 
-    func setPosition(_ position: SIMD3<Float>) {
-        self.position = position
-        modelEntity.position = position
-    }
-
-    func setScale(_ scale: Float) {
-        let scaleVector = SIMD3<Float>(repeating: scale)
-        self.scale = scaleVector
-        modelEntity.scale = scaleVector
-    }
-
-    func cleanup() {
-        // Cancel animations first
-        cancelAllAnimations()
-        // Remove entity from parent and clear resources
-        modelEntity.removeFromParent()
-        // Additional cleanup can be added here (e.g., stop animations, release textures)
-    }
+    // Duplicate methods removed. The preferred implementations with `animated` parameter are below.
+    // The simpler versions can just call the detailed ones with default values if needed, 
+    // but the protocol extension already handles that.
 
     // MARK: - Audio and Effects Support
 

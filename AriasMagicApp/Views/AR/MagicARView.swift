@@ -225,6 +225,13 @@ struct MagicARView: UIViewRepresentable {
         // MARK: - ARSessionDelegate
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+            // Update camera transform for Hide and Seek logic
+            if let currentFrame = session.currentFrame {
+                let cameraTransform = currentFrame.camera.transform
+                let cameraPosition = cameraTransform.position
+                viewModel.updateCameraPosition(cameraPosition)
+            }
+
             for anchor in anchors {
                 if let faceAnchor = anchor as? ARFaceAnchor {
                     faceTrackingService?.processFaceAnchor(faceAnchor)

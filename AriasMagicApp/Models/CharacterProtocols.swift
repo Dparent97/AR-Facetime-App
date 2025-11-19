@@ -47,6 +47,9 @@ protocol AnimatableCharacter: AnyObject {
     /// This should reflect the actual scale of the `modelEntity`.
     var scale: Float { get set }
 
+    /// Whether the character is currently hidden (for Hide and Seek)
+    var isHidden: Bool { get set }
+
     /// Perform an action with optional completion callback
     ///
     /// This method triggers an animation corresponding to the given action.
@@ -170,6 +173,9 @@ struct CharacterSyncState: Codable, Equatable {
 
     /// Participant who owns/created this character
     let ownerID: String?
+    
+    /// Whether the character is hidden
+    let isHidden: Bool
 
     init(
         id: UUID,
@@ -177,6 +183,7 @@ struct CharacterSyncState: Codable, Equatable {
         position: SIMD3<Float>,
         scale: Float,
         action: CharacterAction,
+        isHidden: Bool = false,
         timestamp: TimeInterval = Date().timeIntervalSince1970,
         ownerID: String? = nil
     ) {
@@ -185,6 +192,7 @@ struct CharacterSyncState: Codable, Equatable {
         self.position = position
         self.scale = scale
         self.action = action
+        self.isHidden = isHidden
         self.timestamp = timestamp
         self.ownerID = ownerID
     }
@@ -197,6 +205,7 @@ struct CharacterSyncState: Codable, Equatable {
             position: character.position,
             scale: character.scale,
             action: character.currentAction,
+            isHidden: character.isHidden,
             ownerID: ownerID
         )
     }
