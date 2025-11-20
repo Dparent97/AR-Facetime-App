@@ -1,145 +1,66 @@
-//
-//  ContentView.swift
-//  Aria's Magic SharePlay App
-//
-//  Main app view coordinating AR and UI
-//
-
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var characterViewModel = CharacterViewModel()
-    @StateObject private var sharePlayService = SharePlayService()
-    @State private var showOnboarding = true
-    @State private var showErrorAlert = false
-    @State private var currentAlert: ErrorAlert?
-    @State private var showSettings = false
-    @Environment(\.scenePhase) private var scenePhase
-
+    @State private var store = CharacterStore()
+    @State private var sceneController = ARSceneController() // Held here to survive re-renders
+    
+    @State private var selectedCharacterType: CharacterType = .sparkleThePrincess
+    @State private var selectedCharacterID: UUID?
+    
+    @State private var showOnboarding = false // Deferred
+    @State private var showSettings = false // Deferred
+    
     var body: some View {
         ZStack {
-            // AR View (main background)
-            MagicARView(
-                viewModel: characterViewModel,
-                onError: { error in
-                    handleError(error)
-                },
-                isActive: scenePhase == .active
+            // AR View
+            ARContainerView(
+                store: store,
+                selectedCharacterType: $selectedCharacterType,
+                selectedCharacterID: $selectedCharacterID,
+                sceneController: sceneController
             )
-                .edgesIgnoringSafeArea(.all)
-
+            .edgesIgnoringSafeArea(.all)
+            .accessibilityIdentifier("ARView")
+            
             // UI Overlay
             VStack {
-                // Top bar
+                // Header
                 HStack {
                     Text("✨ Aria's Magic World")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
-
+                    
                     Spacer()
-
-                    HStack(spacing: 12) {
-                        if sharePlayService.isActive {
-                            Image(systemName: "person.2.fill")
-                                .foregroundColor(.green)
-                                .padding(8)
-                                .background(Color.white.opacity(0.9))
-                                .clipShape(Circle())
-                        }
-
-                        Button {
-                            HapticManager.shared.trigger(.light)
-                            showSettings = true
-                        } label: {
-                            Image(systemName: "gearshape.fill")
-                                .foregroundColor(.white)
-                                .padding(8)
-                                .background(Color.black.opacity(0.3))
-                                .clipShape(Circle())
-                        }
+                    
+                    Button {
+                        HapticManager.shared.trigger(.light)
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(Circle())
                     }
                 }
                 .padding()
-
+                
                 Spacer()
-
-                // Character picker
-                CharacterPickerView(viewModel: characterViewModel)
+                
+                // Character Picker
+                CharacterPickerView(selectedType: $selectedCharacterType)
                     .padding(.bottom, 12)
-
-                // Action buttons
-                ActionButtonsView(viewModel: characterViewModel)
+                
+                // Action Buttons
+                ActionButtonsView(store: store, selectedCharacterID: $selectedCharacterID)
                     .padding(.bottom, 20)
             }
         }
-        .sheet(isPresented: $showOnboarding) {
-            OnboardingView(isPresented: $showOnboarding)
-        }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            Text("Settings (Coming Soon)")
         }
-        .alert(item: $currentAlert) { alert in
-            Alert(
-                title: Text(alert.title),
-                message: Text(alert.message),
-                dismissButton: .default(Text("OK")) {
-                    characterViewModel.dismissError()
-                }
-            )
-        }
-        .onReceive(characterViewModel.$currentError) { errorState in
-            if let errorState = errorState, !errorState.isDismissed {
-                currentAlert = ErrorAlert(from: errorState.error)
-            }
-        }
-        .onReceive(sharePlayService.$lastError) { error in
-            if let error = error {
-                handleError(error)
-            }
-        }
-        .onAppear {
-            // Set up error handlers
-            sharePlayService.onError = { error in
-                handleError(error)
-            }
-            
-            // Connect SharePlay service to view model
-            characterViewModel.setSharePlayService(sharePlayService)
-        }
-    }
-
-    private func handleError(_ error: AppError) {
-        // Determine if we should show an alert based on severity
-        switch error.severity {
-        case .info:
-            // Just log, no alert needed
-            ErrorLoggingService.shared.logError(error)
-        case .warning:
-            // Show non-intrusive alert for warnings
-            currentAlert = ErrorAlert(from: error)
-        case .error, .critical:
-            // Show full alert for errors
-            currentAlert = ErrorAlert(from: error)
-        }
-    }
-}
-
-// MARK: - Error Alert Helper
-
-struct ErrorAlert: Identifiable {
-    let id = UUID()
-    let title: String
-    let message: String
-
-    init(from error: AppError) {
-        self.title = error.errorDescription ?? "Error"
-        var messageText = error.failureReason ?? ""
-        if let recovery = error.recoverySuggestion {
-            messageText += "\n\n\(recovery)"
-        }
-        self.message = messageText
     }
 }
 

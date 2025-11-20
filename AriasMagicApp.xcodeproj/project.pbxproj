@@ -3,217 +3,260 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AA0001010000000000000001 /* AriasMagicAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000001 /* AriasMagicAppApp.swift */; };
-		AA0001020000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000002 /* ContentView.swift */; };
-		AA0001030000000000000001 /* MagicARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000003 /* MagicARView.swift */; };
-		AA0001040000000000000001 /* ActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000004 /* ActionButtonsView.swift */; };
-		AA0001050000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000005 /* OnboardingView.swift */; };
-		AA0001060000000000000001 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000006 /* Character.swift */; };
-		AA0001070000000000000001 /* MagicEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000007 /* MagicEffect.swift */; };
-		AA0001080000000000000001 /* CharacterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000008 /* CharacterViewModel.swift */; };
-		AA0001090000000000000001 /* FaceTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000009 /* FaceTrackingService.swift */; };
-		AA0001100000000000000001 /* SharePlayService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000010 /* SharePlayService.swift */; };
-		AA0002010000000000000001 /* FaceTrackingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000001 /* FaceTrackingServiceTests.swift */; };
-		AA0002020000000000000001 /* CharacterViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000002 /* CharacterViewModelTests.swift */; };
-		AA0002030000000000000001 /* SharePlayServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000003 /* SharePlayServiceTests.swift */; };
-		AA0002040000000000000001 /* TestUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002000000000000000004 /* TestUtilities.swift */; };
-		AA0003010000000000000001 /* OnboardingFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000001 /* OnboardingFlowTests.swift */; };
-		AA0003020000000000000001 /* CharacterInteractionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000002 /* CharacterInteractionTests.swift */; };
+		0533518FDF9C876266D4C02A /* ARContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CF6ABE1D403FD50AF324FD /* ARContainerView.swift */; };
+		084DEF37BA56DB9BD7295E29 /* AudioAssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B569D599465B620C3D5701E /* AudioAssetLoader.swift */; };
+		0E3F21A3D77D3644F073F260 /* ErrorLoggingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2257FC7FDAD356F4F755C5C /* ErrorLoggingService.swift */; };
+		10197A9AE592918A9EA39875 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB78BD8DD072EC94CC933AC8 /* HelpView.swift */; };
+		12B49AE8FD3CB6BFC302387B /* AriasMagicAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C276A974216FCF3A8DBCD5 /* AriasMagicAppApp.swift */; };
+		1B8998052382A58AB43B40CE /* AssetLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099F05C153EE77AF7ABFA867 /* AssetLoaderTests.swift */; };
+		1ED25452287409DA29A4C27B /* FPSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D18BE11C96124E9118A00554 /* FPSTests.swift */; };
+		2127893973E8161A672928E2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 380A97296AE94E70F9AE96EB /* OnboardingView.swift */; };
+		26A595336B3A2AF75AA1EC36 /* FaceTrackingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5FEC9062343D7915DA4E5C0 /* FaceTrackingServiceTests.swift */; };
+		274D3D26231781D3881DD560 /* AnimatableCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1CCB5B9ECF5B6BED7601EA /* AnimatableCharacter.swift */; };
+		2D3005FC606C9F5CDF1E5D72 /* SettingsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D3BB78A33D80E633A992FB /* SettingsService.swift */; };
+		320BACCD8CB9801F892F00D3 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C4CBA64FC9C34908AA770F /* AppError.swift */; };
+		33E1C4BCD30863A1987B4B1F /* CharacterPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9406113774ABE4561B102373 /* CharacterPickerView.swift */; };
+		56D9F40E1768C29DD80E1587 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCE5ED40A2ECAC7A95EC695 /* HapticManager.swift */; };
+		574F563559EC112A177A9EDB /* AssetLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050FDB32077D0B8E5B3F2607 /* AssetLoadingTests.swift */; };
+		610CDAC3DD1C3EA7626024D7 /* AssetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A25D2BC07E6438A0965D25E /* AssetCatalog.swift */; };
+		61AF48DBDA1AADDE391DB991 /* AnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4F656CC9B34AE552CB59E2 /* AnimationController.swift */; };
+		66990C804E45F38627BE1C60 /* TestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438C1D53925E6F0BB5A11F7B /* TestFixtures.swift */; };
+		68EE3D6F6478DB52DFBC8D6E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E53F0D19AB3E09E6177753 /* SettingsView.swift */; };
+		765492FDC9055968E92670E5 /* FaceTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FB2441B10A73F65062B8E4 /* FaceTrackingService.swift */; };
+		86EF6078779F92870E762179 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5029C03B755DD2DF6934A164 /* Logger.swift */; };
+		906EC34C02B688D4FEA30EFC /* CharacterStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445F78144C4D37AF42603004 /* CharacterStateTests.swift */; };
+		931CF799AA9BDDA0067957B6 /* CharacterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDAAE25A13880C448B88FEEB /* CharacterState.swift */; };
+		9542BE1B35B7784A49650724 /* CharacterStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCF2EED9CD0FB51E31F9BB6 /* CharacterStoreTests.swift */; };
+		9A9E4C2D2B15F3F2090782AA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F6F35275E69AA10E8A2EE4 /* ContentView.swift */; };
+		9DA6D2D2C6CBF8E5263364B7 /* ARSceneControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA3F2D641307D8762BF7A9E /* ARSceneControllerTests.swift */; };
+		A010A2B61B4CE08DAE4BA30B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E09090E2B753A4A310F70E5F /* Foundation.framework */; };
+		ACCC3ED54A821C81BBD1C0F2 /* AudioCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55D772D464BB49BF2EB3907 /* AudioCatalog.swift */; };
+		B2B80C01A0A47F5BED79F90F /* MemoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE9FAF2436DD7D05B7E238A /* MemoryTests.swift */; };
+		B6105ADCA2429B08A8CB6FED /* CharacterProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC315E7C0D20088D8FBD4331 /* CharacterProtocolTests.swift */; };
+		B6BC972A5D73DB63E29B431A /* AssetLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED2D4A41E08439CA095DF2E /* AssetLoader.swift */; };
+		BAF69B7BD937AD8B514D1D8C /* ARSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764A82F23F93ADB84B42BD15 /* ARSceneController.swift */; };
+		BC519D1CE84B65B1B8D27443 /* ActionButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB96CAEEBCCFF7D57EEDAAE /* ActionButtonsView.swift */; };
+		C7ECA99C63BE8EABB679F2D8 /* CharacterSpawningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEDD02412A17C668CF15378E /* CharacterSpawningTests.swift */; };
+		CD36F1A17798C28B2F7B319B /* CharacterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314C121799778FD57C289110 /* CharacterStore.swift */; };
+		D03825FC4A5BC07A00A4CDA0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E09090E2B753A4A310F70E5F /* Foundation.framework */; };
+		D61A88B3DDF185CC847B8A41 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E09090E2B753A4A310F70E5F /* Foundation.framework */; };
+		D73FB6E9EAEE5A47B6B42981 /* CharacterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DDAF9B2258365AA49EFCCF0 /* CharacterType.swift */; };
+		DE1F01EE46838CD8ED4BC7F6 /* CharacterAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D56690BD42262B4F2892E321 /* CharacterAction.swift */; };
+		DFAEF55211748CE41BF75407 /* EffectState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BFC9E58B0001CC4563805F /* EffectState.swift */; };
+		E689F8716933D0202AE0E8AC /* EffectType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BE465E931FE762092DE6A5 /* EffectType.swift */; };
+		E6B9F0B104860D8CE58B8038 /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F00AF7187852F361EAC43A /* AudioService.swift */; };
+		F10CC2C5633A62945B102A8F /* MagicEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AE1E19A5A136A1A987411C /* MagicEffect.swift */; };
+		F3E312BAD18587B3220EE1ED /* AnimationClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C3D59205C426F6A626509A /* AnimationClip.swift */; };
+		FC069E4F7934DE69E5EC1CC5 /* EntityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3072BDCC815A26568801D28F /* EntityFactory.swift */; };
+		FD21A39ADFAA894AADC6FB82 /* OnboardingFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F782803DD2BCA2DD866E4BC /* OnboardingFlowTests.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		AA0010000000000000000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA0000000000000000000000 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AA0000010000000000000000;
-			remoteInfo = AriasMagicApp;
-		};
-		AA0010000000000000000002 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AA0000000000000000000000 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AA0000010000000000000000;
-			remoteInfo = AriasMagicApp;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		AA0000010000000000000000 /* AriasMagicApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AriasMagicApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA0001000000000000000001 /* AriasMagicAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AriasMagicAppApp.swift; sourceTree = "<group>"; };
-		AA0001000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000003 /* MagicARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicARView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000004 /* ActionButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButtonsView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000005 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		AA0001000000000000000006 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
-		AA0001000000000000000007 /* MagicEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicEffect.swift; sourceTree = "<group>"; };
-		AA0001000000000000000008 /* CharacterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterViewModel.swift; sourceTree = "<group>"; };
-		AA0001000000000000000009 /* FaceTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceTrackingService.swift; sourceTree = "<group>"; };
-		AA0001000000000000000010 /* SharePlayService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePlayService.swift; sourceTree = "<group>"; };
-		AA0001000000000000000011 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA0002000000000000000000 /* AriasMagicAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA0002000000000000000001 /* FaceTrackingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceTrackingServiceTests.swift; sourceTree = "<group>"; };
-		AA0002000000000000000002 /* CharacterViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterViewModelTests.swift; sourceTree = "<group>"; };
-		AA0002000000000000000003 /* SharePlayServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePlayServiceTests.swift; sourceTree = "<group>"; };
-		AA0002000000000000000004 /* TestUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtilities.swift; sourceTree = "<group>"; };
-		AA0003000000000000000000 /* AriasMagicAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA0003000000000000000001 /* OnboardingFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowTests.swift; sourceTree = "<group>"; };
-		AA0003000000000000000002 /* CharacterInteractionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterInteractionTests.swift; sourceTree = "<group>"; };
+		050FDB32077D0B8E5B3F2607 /* AssetLoadingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssetLoadingTests.swift; path = Tests/Performance/AssetLoadingTests.swift; sourceTree = "<group>"; };
+		099F05C153EE77AF7ABFA867 /* AssetLoaderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssetLoaderTests.swift; path = Tests/Unit/Assets/AssetLoaderTests.swift; sourceTree = "<group>"; };
+		13F6F35275E69AA10E8A2EE4 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = AriasMagicApp/Views/ContentView.swift; sourceTree = "<group>"; };
+		19C3D59205C426F6A626509A /* AnimationClip.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimationClip.swift; path = AriasMagicApp/Assets/AnimationClip.swift; sourceTree = "<group>"; };
+		23AE1E19A5A136A1A987411C /* MagicEffect.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MagicEffect.swift; path = AriasMagicApp/Models/MagicEffect.swift; sourceTree = "<group>"; };
+		27BE465E931FE762092DE6A5 /* EffectType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EffectType.swift; path = AriasMagicApp/Domain/Models/EffectType.swift; sourceTree = "<group>"; };
+		3072BDCC815A26568801D28F /* EntityFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EntityFactory.swift; path = AriasMagicApp/AR/EntityFactory.swift; sourceTree = "<group>"; };
+		314C121799778FD57C289110 /* CharacterStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterStore.swift; path = AriasMagicApp/Domain/CharacterStore.swift; sourceTree = "<group>"; };
+		380A97296AE94E70F9AE96EB /* OnboardingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingView.swift; path = AriasMagicApp/Views/UI/OnboardingView.swift; sourceTree = "<group>"; };
+		3A25D2BC07E6438A0965D25E /* AssetCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssetCatalog.swift; path = AriasMagicApp/Assets/AssetCatalog.swift; sourceTree = "<group>"; };
+		3FCE5ED40A2ECAC7A95EC695 /* HapticManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HapticManager.swift; path = AriasMagicApp/Services/HapticManager.swift; sourceTree = "<group>"; };
+		438C1D53925E6F0BB5A11F7B /* TestFixtures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TestFixtures.swift; path = Tests/Fixtures/TestFixtures.swift; sourceTree = "<group>"; };
+		4447488DFB2EEE049D2E5F39 /* AriasMagicAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		445F78144C4D37AF42603004 /* CharacterStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterStateTests.swift; path = Tests/Unit/Domain/CharacterStateTests.swift; sourceTree = "<group>"; };
+		4F782803DD2BCA2DD866E4BC /* OnboardingFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingFlowTests.swift; path = Tests/UI/OnboardingFlowTests.swift; sourceTree = "<group>"; };
+		5029C03B755DD2DF6934A164 /* Logger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Logger.swift; path = AriasMagicApp/Utilities/Logger.swift; sourceTree = "<group>"; };
+		6DDAF9B2258365AA49EFCCF0 /* CharacterType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterType.swift; path = AriasMagicApp/Domain/Models/CharacterType.swift; sourceTree = "<group>"; };
+		71BFC9E58B0001CC4563805F /* EffectState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EffectState.swift; path = AriasMagicApp/Domain/Models/EffectState.swift; sourceTree = "<group>"; };
+		73F00AF7187852F361EAC43A /* AudioService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioService.swift; path = AriasMagicApp/Services/AudioService.swift; sourceTree = "<group>"; };
+		764A82F23F93ADB84B42BD15 /* ARSceneController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ARSceneController.swift; path = AriasMagicApp/AR/ARSceneController.swift; sourceTree = "<group>"; };
+		7B569D599465B620C3D5701E /* AudioAssetLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioAssetLoader.swift; path = AriasMagicApp/Assets/AudioAssetLoader.swift; sourceTree = "<group>"; };
+		7CCF2EED9CD0FB51E31F9BB6 /* CharacterStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterStoreTests.swift; path = Tests/Unit/Domain/CharacterStoreTests.swift; sourceTree = "<group>"; };
+		7DE9FAF2436DD7D05B7E238A /* MemoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MemoryTests.swift; path = Tests/Performance/MemoryTests.swift; sourceTree = "<group>"; };
+		7FA3F2D641307D8762BF7A9E /* ARSceneControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ARSceneControllerTests.swift; path = Tests/Integration/ARSceneControllerTests.swift; sourceTree = "<group>"; };
+		9406113774ABE4561B102373 /* CharacterPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterPickerView.swift; path = AriasMagicApp/Views/UI/CharacterPickerView.swift; sourceTree = "<group>"; };
+		9A1CCB5B9ECF5B6BED7601EA /* AnimatableCharacter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimatableCharacter.swift; path = AriasMagicApp/Domain/Protocols/AnimatableCharacter.swift; sourceTree = "<group>"; };
+		A55F817B0002F19C9EA4FEBC /* AriasMagicAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAB96CAEEBCCFF7D57EEDAAE /* ActionButtonsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ActionButtonsView.swift; path = AriasMagicApp/Views/UI/ActionButtonsView.swift; sourceTree = "<group>"; };
+		AC315E7C0D20088D8FBD4331 /* CharacterProtocolTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterProtocolTests.swift; path = Tests/Unit/CharacterProtocolTests.swift; sourceTree = "<group>"; };
+		AEDD02412A17C668CF15378E /* CharacterSpawningTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterSpawningTests.swift; path = Tests/UI/CharacterSpawningTests.swift; sourceTree = "<group>"; };
+		B3FB2441B10A73F65062B8E4 /* FaceTrackingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTrackingService.swift; path = AriasMagicApp/Services/FaceTrackingService.swift; sourceTree = "<group>"; };
+		B4E53F0D19AB3E09E6177753 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = AriasMagicApp/Views/UI/SettingsView.swift; sourceTree = "<group>"; };
+		B65EEB2FD0BAC4C713835ACC /* AriasMagicApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AriasMagicApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9D3BB78A33D80E633A992FB /* SettingsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsService.swift; path = AriasMagicApp/Services/SettingsService.swift; sourceTree = "<group>"; };
+		CB4F656CC9B34AE552CB59E2 /* AnimationController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimationController.swift; path = AriasMagicApp/AR/AnimationController.swift; sourceTree = "<group>"; };
+		CB78BD8DD072EC94CC933AC8 /* HelpView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HelpView.swift; path = AriasMagicApp/Views/UI/HelpView.swift; sourceTree = "<group>"; };
+		CED2D4A41E08439CA095DF2E /* AssetLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssetLoader.swift; path = AriasMagicApp/Assets/AssetLoader.swift; sourceTree = "<group>"; };
+		D0C4CBA64FC9C34908AA770F /* AppError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppError.swift; path = AriasMagicApp/Models/AppError.swift; sourceTree = "<group>"; };
+		D18BE11C96124E9118A00554 /* FPSTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FPSTests.swift; path = Tests/Performance/FPSTests.swift; sourceTree = "<group>"; };
+		D55D772D464BB49BF2EB3907 /* AudioCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioCatalog.swift; path = AriasMagicApp/Assets/AudioCatalog.swift; sourceTree = "<group>"; };
+		D56690BD42262B4F2892E321 /* CharacterAction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterAction.swift; path = AriasMagicApp/Domain/Models/CharacterAction.swift; sourceTree = "<group>"; };
+		DD855DEC6558863C1AF556B9 /* AriasMagicAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E09090E2B753A4A310F70E5F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		E5FEC9062343D7915DA4E5C0 /* FaceTrackingServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTrackingServiceTests.swift; path = Tests/Unit/Services/FaceTrackingServiceTests.swift; sourceTree = "<group>"; };
+		F2257FC7FDAD356F4F755C5C /* ErrorLoggingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorLoggingService.swift; path = AriasMagicApp/Services/ErrorLoggingService.swift; sourceTree = "<group>"; };
+		F4C276A974216FCF3A8DBCD5 /* AriasMagicAppApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AriasMagicAppApp.swift; path = AriasMagicApp/App/AriasMagicAppApp.swift; sourceTree = "<group>"; };
+		F5CF6ABE1D403FD50AF324FD /* ARContainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ARContainerView.swift; path = AriasMagicApp/Views/AR/ARContainerView.swift; sourceTree = "<group>"; };
+		FB44D24780886C82D6C2C06E /* AriasMagicAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AriasMagicAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FDAAE25A13880C448B88FEEB /* CharacterState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CharacterState.swift; path = AriasMagicApp/Domain/Models/CharacterState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		AA0000020000000000000000 /* Frameworks */ = {
+		4EBDCAB146E37AE5FDBB4AE3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D03825FC4A5BC07A00A4CDA0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0020000000000000000000 /* Frameworks */ = {
+		B06C442B2965324682855F6D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A010A2B61B4CE08DAE4BA30B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0030000000000000000000 /* Frameworks */ = {
+		C43D3E1D1A7BC808F2453585 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D61A88B3DDF185CC847B8A41 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AA0000000000000000000001 = {
+		09F49AAA576644C48AFA6B62 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000002 /* AriasMagicApp */,
-				AA0020000000000000000001 /* AriasMagicAppTests */,
-				AA0030000000000000000001 /* AriasMagicAppUITests */,
-				AA0000000000000000000003 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		AA0000000000000000000002 /* AriasMagicApp */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000011 /* Info.plist */,
-				AA0000000000000000000004 /* App */,
-				AA0000000000000000000005 /* Views */,
-				AA0000000000000000000008 /* Models */,
-				AA0000000000000000000009 /* ViewModels */,
-				AA0000000000000000000010 /* Services */,
-			);
-			path = AriasMagicApp;
-			sourceTree = "<group>";
-		};
-		AA0000000000000000000003 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				AA0000010000000000000000 /* AriasMagicApp.app */,
-				AA0002000000000000000000 /* AriasMagicAppTests.xctest */,
-				AA0003000000000000000000 /* AriasMagicAppUITests.xctest */,
+				B65EEB2FD0BAC4C713835ACC /* AriasMagicApp.app */,
+				FB44D24780886C82D6C2C06E /* AriasMagicAppTests.xctest */,
+				A55F817B0002F19C9EA4FEBC /* AriasMagicAppTests.xctest */,
+				DD855DEC6558863C1AF556B9 /* AriasMagicAppUITests.xctest */,
+				4447488DFB2EEE049D2E5F39 /* AriasMagicAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000004 /* App */ = {
+		5708A4579F646DCB45107296 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000001 /* AriasMagicAppApp.swift */,
+				E09090E2B753A4A310F70E5F /* Foundation.framework */,
 			);
-			path = App;
+			name = iOS;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000005 /* Views */ = {
+		7E4321520AEA51C046F17C22 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000002 /* ContentView.swift */,
-				AA0000000000000000000006 /* AR */,
-				AA0000000000000000000007 /* UI */,
+				AEDD02412A17C668CF15378E /* CharacterSpawningTests.swift */,
+				4F782803DD2BCA2DD866E4BC /* OnboardingFlowTests.swift */,
+				AC315E7C0D20088D8FBD4331 /* CharacterProtocolTests.swift */,
+				099F05C153EE77AF7ABFA867 /* AssetLoaderTests.swift */,
+				7CCF2EED9CD0FB51E31F9BB6 /* CharacterStoreTests.swift */,
+				445F78144C4D37AF42603004 /* CharacterStateTests.swift */,
+				E5FEC9062343D7915DA4E5C0 /* FaceTrackingServiceTests.swift */,
+				7FA3F2D641307D8762BF7A9E /* ARSceneControllerTests.swift */,
+				438C1D53925E6F0BB5A11F7B /* TestFixtures.swift */,
+				7DE9FAF2436DD7D05B7E238A /* MemoryTests.swift */,
+				D18BE11C96124E9118A00554 /* FPSTests.swift */,
+				050FDB32077D0B8E5B3F2607 /* AssetLoadingTests.swift */,
 			);
-			path = Views;
+			name = Tests;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000006 /* AR */ = {
+		A3FDA74DE4D032787721F0FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000003 /* MagicARView.swift */,
+				5708A4579F646DCB45107296 /* iOS */,
 			);
-			path = AR;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000007 /* UI */ = {
+		C43FCD6E77E918BF934BCE7F /* AriasMagicApp */ = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000004 /* ActionButtonsView.swift */,
-				AA0001000000000000000005 /* OnboardingView.swift */,
+				F4C276A974216FCF3A8DBCD5 /* AriasMagicAppApp.swift */,
+				D0C4CBA64FC9C34908AA770F /* AppError.swift */,
+				23AE1E19A5A136A1A987411C /* MagicEffect.swift */,
+				5029C03B755DD2DF6934A164 /* Logger.swift */,
+				CB4F656CC9B34AE552CB59E2 /* AnimationController.swift */,
+				3072BDCC815A26568801D28F /* EntityFactory.swift */,
+				764A82F23F93ADB84B42BD15 /* ARSceneController.swift */,
+				B4E53F0D19AB3E09E6177753 /* SettingsView.swift */,
+				CB78BD8DD072EC94CC933AC8 /* HelpView.swift */,
+				AAB96CAEEBCCFF7D57EEDAAE /* ActionButtonsView.swift */,
+				380A97296AE94E70F9AE96EB /* OnboardingView.swift */,
+				9406113774ABE4561B102373 /* CharacterPickerView.swift */,
+				F5CF6ABE1D403FD50AF324FD /* ARContainerView.swift */,
+				13F6F35275E69AA10E8A2EE4 /* ContentView.swift */,
+				19C3D59205C426F6A626509A /* AnimationClip.swift */,
+				3A25D2BC07E6438A0965D25E /* AssetCatalog.swift */,
+				CED2D4A41E08439CA095DF2E /* AssetLoader.swift */,
+				7B569D599465B620C3D5701E /* AudioAssetLoader.swift */,
+				D55D772D464BB49BF2EB3907 /* AudioCatalog.swift */,
+				314C121799778FD57C289110 /* CharacterStore.swift */,
+				6DDAF9B2258365AA49EFCCF0 /* CharacterType.swift */,
+				D56690BD42262B4F2892E321 /* CharacterAction.swift */,
+				27BE465E931FE762092DE6A5 /* EffectType.swift */,
+				FDAAE25A13880C448B88FEEB /* CharacterState.swift */,
+				71BFC9E58B0001CC4563805F /* EffectState.swift */,
+				9A1CCB5B9ECF5B6BED7601EA /* AnimatableCharacter.swift */,
+				B3FB2441B10A73F65062B8E4 /* FaceTrackingService.swift */,
+				3FCE5ED40A2ECAC7A95EC695 /* HapticManager.swift */,
+				73F00AF7187852F361EAC43A /* AudioService.swift */,
+				F2257FC7FDAD356F4F755C5C /* ErrorLoggingService.swift */,
+				C9D3BB78A33D80E633A992FB /* SettingsService.swift */,
 			);
-			path = UI;
+			name = AriasMagicApp;
 			sourceTree = "<group>";
 		};
-		AA0000000000000000000008 /* Models */ = {
+		EE7D349E6E93450C63765AAF = {
 			isa = PBXGroup;
 			children = (
-				AA0001000000000000000006 /* Character.swift */,
-				AA0001000000000000000007 /* MagicEffect.swift */,
+				09F49AAA576644C48AFA6B62 /* Products */,
+				A3FDA74DE4D032787721F0FA /* Frameworks */,
+				C43FCD6E77E918BF934BCE7F /* AriasMagicApp */,
+				7E4321520AEA51C046F17C22 /* Tests */,
 			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		AA0000000000000000000009 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000008 /* CharacterViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		AA0000000000000000000010 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				AA0001000000000000000009 /* FaceTrackingService.swift */,
-				AA0001000000000000000010 /* SharePlayService.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		AA0020000000000000000001 /* AriasMagicAppTests */ = {
-			isa = PBXGroup;
-			children = (
-				AA0002000000000000000004 /* TestUtilities.swift */,
-				AA0002000000000000000001 /* FaceTrackingServiceTests.swift */,
-				AA0002000000000000000002 /* CharacterViewModelTests.swift */,
-				AA0002000000000000000003 /* SharePlayServiceTests.swift */,
-			);
-			path = AriasMagicAppTests;
-			sourceTree = "<group>";
-		};
-		AA0030000000000000000001 /* AriasMagicAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				AA0003000000000000000001 /* OnboardingFlowTests.swift */,
-				AA0003000000000000000002 /* CharacterInteractionTests.swift */,
-			);
-			path = AriasMagicAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA0000010000000000000000 /* AriasMagicApp */ = {
+		42177695FD2D0596F4F9C0B6 /* AriasMagicAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA0000100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicApp" */;
+			buildConfigurationList = 8DF8293CF448E5E4BD023FB3 /* Build configuration list for PBXNativeTarget "AriasMagicAppTests" */;
 			buildPhases = (
-				AA0000020000000000000001 /* Sources */,
-				AA0000020000000000000000 /* Frameworks */,
-				AA0000020000000000000002 /* Resources */,
+				16F9D59808E4A54CD481EB7A /* Sources */,
+				B06C442B2965324682855F6D /* Frameworks */,
+				A54E1F86E429842D1460BB87 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AriasMagicAppTests;
+			productName = AriasMagicAppTests;
+			productReference = FB44D24780886C82D6C2C06E /* AriasMagicAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C892D4F1FFFE5CEBAFEB7151 /* AriasMagicApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F48AD10D9317EBFAC8A1FACF /* Build configuration list for PBXNativeTarget "AriasMagicApp" */;
+			buildPhases = (
+				CEDE6F9A8F2339ECB3AAAE00 /* Sources */,
+				4EBDCAB146E37AE5FDBB4AE3 /* Frameworks */,
+				B30A874BA280D306657D6133 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -221,104 +264,73 @@
 			);
 			name = AriasMagicApp;
 			productName = AriasMagicApp;
-			productReference = AA0000010000000000000000 /* AriasMagicApp.app */;
+			productReference = B65EEB2FD0BAC4C713835ACC /* AriasMagicApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		AA0020010000000000000000 /* AriasMagicAppTests */ = {
+		F4210BDCDC972C810867D6D2 /* AriasMagicAppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA0020100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicAppTests" */;
+			buildConfigurationList = 3793A408A6A4C632F22C8739 /* Build configuration list for PBXNativeTarget "AriasMagicAppUITests" */;
 			buildPhases = (
-				AA0020020000000000000001 /* Sources */,
-				AA0020000000000000000000 /* Frameworks */,
-				AA0020020000000000000002 /* Resources */,
+				08B5D5A7B882F7DB1F0D15B9 /* Sources */,
+				C43D3E1D1A7BC808F2453585 /* Frameworks */,
+				89A1766E58940CEC48D2C523 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				AA0020030000000000000000 /* PBXTargetDependency */,
-			);
-			name = AriasMagicAppTests;
-			productName = AriasMagicAppTests;
-			productReference = AA0002000000000000000000 /* AriasMagicAppTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		AA0030010000000000000000 /* AriasMagicAppUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = AA0030100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicAppUITests" */;
-			buildPhases = (
-				AA0030020000000000000001 /* Sources */,
-				AA0030000000000000000000 /* Frameworks */,
-				AA0030020000000000000002 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				AA0030030000000000000000 /* PBXTargetDependency */,
 			);
 			name = AriasMagicAppUITests;
 			productName = AriasMagicAppUITests;
-			productReference = AA0003000000000000000000 /* AriasMagicAppUITests.xctest */;
+			productReference = DD855DEC6558863C1AF556B9 /* AriasMagicAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AA0000000000000000000000 /* Project object */ = {
+		2D437E0B7AF8FA7FC9275D4B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					AA0000010000000000000000 = {
-						CreatedOnToolsVersion = 15.0;
-					};
-					AA0020010000000000000000 = {
-						CreatedOnToolsVersion = 15.0;
-						TestTargetID = AA0000010000000000000000;
-					};
-					AA0030010000000000000000 = {
-						CreatedOnToolsVersion = 15.0;
-						TestTargetID = AA0000010000000000000000;
-					};
-				};
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = AA0000000000000000000004 /* Build configuration list for PBXProject "AriasMagicApp" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = 0DCAAE4AD4A22397E0D77693 /* Build configuration list for PBXProject "AriasMagicApp" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = AA0000000000000000000001;
-			productRefGroup = AA0000000000000000000003 /* Products */;
+			mainGroup = EE7D349E6E93450C63765AAF;
+			minimizedProjectReferenceProxies = 0;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 09F49AAA576644C48AFA6B62 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA0000010000000000000000 /* AriasMagicApp */,
-				AA0020010000000000000000 /* AriasMagicAppTests */,
-				AA0030010000000000000000 /* AriasMagicAppUITests */,
+				C892D4F1FFFE5CEBAFEB7151 /* AriasMagicApp */,
+				42177695FD2D0596F4F9C0B6 /* AriasMagicAppTests */,
+				F4210BDCDC972C810867D6D2 /* AriasMagicAppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		AA0000020000000000000002 /* Resources */ = {
+		89A1766E58940CEC48D2C523 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0020020000000000000002 /* Resources */ = {
+		A54E1F86E429842D1460BB87 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0030020000000000000002 /* Resources */ = {
+		B30A874BA280D306657D6133 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -328,67 +340,81 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		AA0000020000000000000001 /* Sources */ = {
+		08B5D5A7B882F7DB1F0D15B9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0001010000000000000001 /* AriasMagicAppApp.swift in Sources */,
-				AA0001020000000000000001 /* ContentView.swift in Sources */,
-				AA0001030000000000000001 /* MagicARView.swift in Sources */,
-				AA0001040000000000000001 /* ActionButtonsView.swift in Sources */,
-				AA0001050000000000000001 /* OnboardingView.swift in Sources */,
-				AA0001060000000000000001 /* Character.swift in Sources */,
-				AA0001070000000000000001 /* MagicEffect.swift in Sources */,
-				AA0001080000000000000001 /* CharacterViewModel.swift in Sources */,
-				AA0001090000000000000001 /* FaceTrackingService.swift in Sources */,
-				AA0001100000000000000001 /* SharePlayService.swift in Sources */,
+				C7ECA99C63BE8EABB679F2D8 /* CharacterSpawningTests.swift in Sources */,
+				FD21A39ADFAA894AADC6FB82 /* OnboardingFlowTests.swift in Sources */,
+				9DA6D2D2C6CBF8E5263364B7 /* ARSceneControllerTests.swift in Sources */,
+				B2B80C01A0A47F5BED79F90F /* MemoryTests.swift in Sources */,
+				1ED25452287409DA29A4C27B /* FPSTests.swift in Sources */,
+				574F563559EC112A177A9EDB /* AssetLoadingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0020020000000000000001 /* Sources */ = {
+		16F9D59808E4A54CD481EB7A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0002010000000000000001 /* FaceTrackingServiceTests.swift in Sources */,
-				AA0002020000000000000001 /* CharacterViewModelTests.swift in Sources */,
-				AA0002030000000000000001 /* SharePlayServiceTests.swift in Sources */,
-				AA0002040000000000000001 /* TestUtilities.swift in Sources */,
+				B6105ADCA2429B08A8CB6FED /* CharacterProtocolTests.swift in Sources */,
+				1B8998052382A58AB43B40CE /* AssetLoaderTests.swift in Sources */,
+				9542BE1B35B7784A49650724 /* CharacterStoreTests.swift in Sources */,
+				906EC34C02B688D4FEA30EFC /* CharacterStateTests.swift in Sources */,
+				26A595336B3A2AF75AA1EC36 /* FaceTrackingServiceTests.swift in Sources */,
+				66990C804E45F38627BE1C60 /* TestFixtures.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AA0030020000000000000001 /* Sources */ = {
+		CEDE6F9A8F2339ECB3AAAE00 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA0003010000000000000001 /* OnboardingFlowTests.swift in Sources */,
-				AA0003020000000000000001 /* CharacterInteractionTests.swift in Sources */,
+				12B49AE8FD3CB6BFC302387B /* AriasMagicAppApp.swift in Sources */,
+				320BACCD8CB9801F892F00D3 /* AppError.swift in Sources */,
+				F10CC2C5633A62945B102A8F /* MagicEffect.swift in Sources */,
+				86EF6078779F92870E762179 /* Logger.swift in Sources */,
+				61AF48DBDA1AADDE391DB991 /* AnimationController.swift in Sources */,
+				FC069E4F7934DE69E5EC1CC5 /* EntityFactory.swift in Sources */,
+				BAF69B7BD937AD8B514D1D8C /* ARSceneController.swift in Sources */,
+				68EE3D6F6478DB52DFBC8D6E /* SettingsView.swift in Sources */,
+				10197A9AE592918A9EA39875 /* HelpView.swift in Sources */,
+				BC519D1CE84B65B1B8D27443 /* ActionButtonsView.swift in Sources */,
+				2127893973E8161A672928E2 /* OnboardingView.swift in Sources */,
+				33E1C4BCD30863A1987B4B1F /* CharacterPickerView.swift in Sources */,
+				0533518FDF9C876266D4C02A /* ARContainerView.swift in Sources */,
+				9A9E4C2D2B15F3F2090782AA /* ContentView.swift in Sources */,
+				F3E312BAD18587B3220EE1ED /* AnimationClip.swift in Sources */,
+				610CDAC3DD1C3EA7626024D7 /* AssetCatalog.swift in Sources */,
+				B6BC972A5D73DB63E29B431A /* AssetLoader.swift in Sources */,
+				084DEF37BA56DB9BD7295E29 /* AudioAssetLoader.swift in Sources */,
+				ACCC3ED54A821C81BBD1C0F2 /* AudioCatalog.swift in Sources */,
+				CD36F1A17798C28B2F7B319B /* CharacterStore.swift in Sources */,
+				D73FB6E9EAEE5A47B6B42981 /* CharacterType.swift in Sources */,
+				DE1F01EE46838CD8ED4BC7F6 /* CharacterAction.swift in Sources */,
+				E689F8716933D0202AE0E8AC /* EffectType.swift in Sources */,
+				931CF799AA9BDDA0067957B6 /* CharacterState.swift in Sources */,
+				DFAEF55211748CE41BF75407 /* EffectState.swift in Sources */,
+				274D3D26231781D3881DD560 /* AnimatableCharacter.swift in Sources */,
+				765492FDC9055968E92670E5 /* FaceTrackingService.swift in Sources */,
+				56D9F40E1768C29DD80E1587 /* HapticManager.swift in Sources */,
+				E6B9F0B104860D8CE58B8038 /* AudioService.swift in Sources */,
+				0E3F21A3D77D3644F073F260 /* ErrorLoggingService.swift in Sources */,
+				2D3005FC606C9F5CDF1E5D72 /* SettingsService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		AA0020030000000000000000 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AA0000010000000000000000 /* AriasMagicApp */;
-			targetProxy = AA0010000000000000000001 /* PBXContainerItemProxy */;
-		};
-		AA0030030000000000000000 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AA0000010000000000000000 /* AriasMagicApp */;
-			targetProxy = AA0010000000000000000002 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		AA0000000000000000000005 /* Debug */ = {
+		0CC736E0837FCFC919BA6C58 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -418,8 +444,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -433,25 +458,55 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		AA0000000000000000000006 /* Release */ = {
+		5C439F795156AD3119F7BD64 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AriasMagicApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AriasMagicApp";
+			};
+			name = Debug;
+		};
+		5D92811E121207E6B0B4ED4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				INFOPLIST_FILE = AriasMagicApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		91C1F32E96D60C7FCA2E56AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -481,8 +536,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -490,196 +544,115 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = iphoneos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C9DC500E345D40D726F11ED2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AriasMagicApp;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		AA0000100000000000000001 /* Debug */ = {
+		D30ED4253107E8C0C36E4AD9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.uitests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AriasMagicApp;
+			};
+			name = Debug;
+		};
+		DEDECF90307CE6AE71931194 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				INFOPLIST_FILE = AriasMagicApp/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera for AR face tracking and magical character interactions.";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID for secure authentication.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		AA0000100000000000000002 /* Release */ = {
+		EC6EBE60E373AC546B28823A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = AriasMagicApp/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera for AR face tracking and magical character interactions.";
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "We use Face ID for secure authentication.";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		AA0020100000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				CLANG_ENABLE_OBJC_WEAK = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AriasMagicApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AriasMagicApp";
-				ENABLE_CODE_COVERAGE = YES;
-			};
-			name = Debug;
-		};
-		AA0020100000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AriasMagicApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AriasMagicApp";
-				ENABLE_CODE_COVERAGE = YES;
-			};
-			name = Release;
-		};
-		AA0030100000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.uitests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AriasMagicApp;
-				ENABLE_CODE_COVERAGE = YES;
-			};
-			name = Debug;
-		};
-		AA0030100000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ariasmagic.app.uitests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = AriasMagicApp;
-				ENABLE_CODE_COVERAGE = YES;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA0000000000000000000004 /* Build configuration list for PBXProject "AriasMagicApp" */ = {
+		0DCAAE4AD4A22397E0D77693 /* Build configuration list for PBXProject "AriasMagicApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000000000000000000005 /* Debug */,
-				AA0000000000000000000006 /* Release */,
+				0CC736E0837FCFC919BA6C58 /* Debug */,
+				91C1F32E96D60C7FCA2E56AD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA0000100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicApp" */ = {
+		3793A408A6A4C632F22C8739 /* Build configuration list for PBXNativeTarget "AriasMagicAppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000100000000000000001 /* Debug */,
-				AA0000100000000000000002 /* Release */,
+				C9DC500E345D40D726F11ED2 /* Release */,
+				D30ED4253107E8C0C36E4AD9 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA0020100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicAppTests" */ = {
+		8DF8293CF448E5E4BD023FB3 /* Build configuration list for PBXNativeTarget "AriasMagicAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0020100000000000000001 /* Debug */,
-				AA0020100000000000000002 /* Release */,
+				EC6EBE60E373AC546B28823A /* Release */,
+				5C439F795156AD3119F7BD64 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AA0030100000000000000000 /* Build configuration list for PBXNativeTarget "AriasMagicAppUITests" */ = {
+		F48AD10D9317EBFAC8A1FACF /* Build configuration list for PBXNativeTarget "AriasMagicApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0030100000000000000001 /* Debug */,
-				AA0030100000000000000002 /* Release */,
+				5D92811E121207E6B0B4ED4C /* Release */,
+				DEDECF90307CE6AE71931194 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AA0000000000000000000000 /* Project object */;
+	rootObject = 2D437E0B7AF8FA7FC9275D4B /* Project object */;
 }

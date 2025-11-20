@@ -11,7 +11,7 @@ import os.log
 class ErrorLoggingService {
     static let shared = ErrorLoggingService()
 
-    private let logger = Logger(subsystem: "com.ariasmagic.app", category: "ErrorLogging")
+    private let logger = os.Logger(subsystem: "com.ariasmagic.app", category: "ErrorLogging")
     private var errorHistory: [ErrorState] = []
     private let maxHistorySize = 100
 

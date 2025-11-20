@@ -3,13 +3,17 @@
 //  Aria's Magic SharePlay App
 //
 //  Production-quality particle systems using RealityKit
+//  TODO: Implement in Phase 2 with iOS 18.0+ particle system APIs
 //
 
 import Foundation
 import RealityKit
 import Combine
+import UIKit
 
 /// Enhanced particle effect generator with RealityKit particle systems
+/// Note: Stubbed for Phase 1. Full implementation requires iOS 18.0+ APIs.
+@available(iOS 18.0, *)
 class EnhancedParticleEffects {
 
     // MARK: - Sparkle Particle System

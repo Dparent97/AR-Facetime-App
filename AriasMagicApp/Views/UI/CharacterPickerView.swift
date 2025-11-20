@@ -1,14 +1,7 @@
-//
-//  CharacterPickerView.swift
-//  Aria's Magic SharePlay App
-//
-//  Character selection UI with beautiful cards
-//
-
 import SwiftUI
 
 struct CharacterPickerView: View {
-    @ObservedObject var viewModel: CharacterViewModel
+    @Binding var selectedType: CharacterType
 
     let characterTypes = CharacterType.allCases
 
@@ -28,11 +21,11 @@ struct CharacterPickerView: View {
                     ForEach(characterTypes, id: \.self) { type in
                         CharacterCard(
                             type: type,
-                            isSelected: viewModel.selectedCharacterType == type
+                            isSelected: selectedType == type
                         )
                         .onTapGesture {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                                viewModel.selectedCharacterType = type
+                                selectedType = type
                                 HapticManager.shared.trigger(.selection)
                             }
                         }

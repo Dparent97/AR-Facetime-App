@@ -1,183 +1,87 @@
-//
-//  ActionButtonsView.swift
-//  Aria's Magic SharePlay App
-//
-//  Action buttons for character animations with delightful interactions
-//
-
 import SwiftUI
 
 struct ActionButtonsView: View {
-    @ObservedObject var viewModel: CharacterViewModel
-
-    // Track button press states for animations
-    @State private var pressedButton: String?
-
-    let actions: [(CharacterAction, String, String)] = [
-        (.wave, "👋", "Wave"),
-        (.dance, "💃", "Dance"),
-        (.twirl, "🌀", "Twirl"),
-        (.jump, "⬆️", "Jump")
+    @Bindable var store: CharacterStore
+    @Binding var selectedCharacterID: UUID?
+    
+    // Grid layout
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()),
+        GridItem(.flexible())
     ]
-
-    let effects: [MagicEffect] = MagicEffect.allCases
-
+    
     var body: some View {
-        VStack(spacing: 16) {
-            // Magic effects row
-            HStack(spacing: 12) {
-                ForEach(effects, id: \.self) { effect in
-                    MagicButton(
-                        emoji: effect.emoji,
-                        label: effect.rawValue.capitalized,
-                        gradient: effectGradient(for: effect),
-                        isActive: viewModel.activeEffect == effect,
-                        isEnabled: !viewModel.characters.isEmpty
-                    ) {
-                        triggerEffect(effect)
-                    }
-                    .accessibilityLabel("\(effect.rawValue.capitalized) effect")
-                    .accessibilityHint(hasCharacters ? "Trigger magical \(effect.rawValue) effect" : "No characters available")
-                    .accessibilityAddTraits(.isButton)
+        VStack {
+            if selectedCharacterID != nil {
+                Text("Tap an action!")
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .shadow(radius: 1)
+            } else {
+                Text("Tap a character to perform actions")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+                    .shadow(radius: 1)
+            }
+            
+            LazyVGrid(columns: columns, spacing: 12) {
+                ActionBtn(icon: "hand.wave.fill", label: "Wave", color: .blue) {
+                    perform(.wave)
+                }
+                
+                ActionBtn(icon: "figure.dance", label: "Dance", color: .purple) {
+                    perform(.dance)
+                }
+                
+                ActionBtn(icon: "arrow.triangle.2.circlepath", label: "Twirl", color: .orange) {
+                    perform(.twirl)
+                }
+                
+                ActionBtn(icon: "arrow.up.circle.fill", label: "Jump", color: .green) {
+                    perform(.jump)
+                }
+                
+                ActionBtn(icon: "sparkles", label: "Sparkle", color: .yellow) {
+                    perform(.sparkle)
                 }
             }
-
-            // Character actions row
-            HStack(spacing: 12) {
-                ForEach(actions, id: \.0) { action, emoji, label in
-                    MagicButton(
-                        emoji: emoji,
-                        label: label,
-                        gradient: actionGradient(for: action),
-                        isActive: false,
-                        isEnabled: !viewModel.characters.isEmpty
-                    ) {
-                        performAction(action)
-                    }
-                    .accessibilityLabel("\(label) action")
-                    .accessibilityHint(hasCharacters ? "Make characters \(label.lowercased())" : "No characters available")
-                    .accessibilityAddTraits(.isButton)
-                }
-            }
-        }
-        .padding(.horizontal)
-        .padding(.bottom, 8)
-    }
-
-    // MARK: - Computed Properties
-
-    private var hasCharacters: Bool {
-        !viewModel.characters.isEmpty
-    }
-
-    // MARK: - Actions
-
-    private func performAction(_ action: CharacterAction) {
-        guard hasCharacters else {
-            HapticManager.shared.limitReached()
-            return
-        }
-
-        HapticManager.shared.actionPerformed()
-        viewModel.performAction(action)
-    }
-
-    private func triggerEffect(_ effect: MagicEffect) {
-        guard hasCharacters else {
-            HapticManager.shared.limitReached()
-            return
-        }
-
-        HapticManager.shared.effectTriggered()
-        viewModel.triggerEffect(effect)
-    }
-
-    // MARK: - Gradients
-
-    private func effectGradient(for effect: MagicEffect) -> LinearGradient {
-        switch effect {
-        case .sparkles:
-            return LinearGradient(colors: [Color.yellow, Color.orange], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .snow:
-            return LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .bubbles:
-            return LinearGradient(colors: [Color.mint, Color.teal], startPoint: .topLeading, endPoint: .bottomTrailing)
+            .padding(.horizontal)
+            .disabled(selectedCharacterID == nil)
+            .opacity(selectedCharacterID == nil ? 0.5 : 1.0)
         }
     }
-
-    private func actionGradient(for action: CharacterAction) -> LinearGradient {
-        switch action {
-        case .wave:
-            return LinearGradient(colors: [Color.pink, Color.purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .dance:
-            return LinearGradient(colors: [Color.red, Color.pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .twirl:
-            return LinearGradient(colors: [Color.purple, Color.indigo], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .jump:
-            return LinearGradient(colors: [Color.orange, Color.red], startPoint: .topLeading, endPoint: .bottomTrailing)
-        default:
-            return LinearGradient(colors: [Color.gray, Color.gray.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+    
+    private func perform(_ action: CharacterAction) {
+        guard let id = selectedCharacterID else { return }
+        store.performAction(id: id, action: action)
+        HapticManager.shared.trigger(.light)
     }
 }
 
-// MARK: - Magic Button Component
-
-struct MagicButton: View {
-    let emoji: String
+struct ActionBtn: View {
+    let icon: String
     let label: String
-    let gradient: LinearGradient
-    let isActive: Bool
-    let isEnabled: Bool
+    let color: Color
     let action: () -> Void
-
-    @State private var isPressing = false
-
+    
     var body: some View {
-        Button(action: {
-            if isEnabled {
-                action()
-            }
-        }) {
-            VStack(spacing: 4) {
-                Text(emoji)
-                    .font(.system(size: 28))
+        Button(action: action) {
+            VStack {
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .padding(.bottom, 4)
+                
                 Text(label)
                     .font(.caption)
-                    .fontWeight(.semibold)
+                    .fontWeight(.bold)
             }
-            .frame(width: 75, height: 75)
-            .background(
-                gradient
-                    .opacity(isEnabled ? 1.0 : 0.5)
-            )
+            .frame(height: 80)
+            .frame(maxWidth: .infinity)
+            .background(color.opacity(0.8))
             .foregroundColor(.white)
-            .cornerRadius(18)
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color.white.opacity(isActive ? 0.6 : 0), lineWidth: 2)
-            )
-            .shadow(
-                color: isEnabled ? Color.black.opacity(0.3) : Color.clear,
-                radius: isPressing ? 2 : 6,
-                x: 0,
-                y: isPressing ? 1 : 3
-            )
-            .scaleEffect(isPressing ? 0.95 : (isActive ? 1.05 : 1.0))
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressing)
+            .cornerRadius(12)
+            .shadow(radius: 2)
         }
-        .buttonStyle(PressableButtonStyle(isPressing: $isPressing))
-        .disabled(!isEnabled)
-    }
-}
-
-struct PressableButtonStyle: ButtonStyle {
-    @Binding var isPressing: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .onChange(of: configuration.isPressed) { newValue in
-                isPressing = newValue
-            }
     }
 }

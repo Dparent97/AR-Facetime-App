@@ -245,7 +245,7 @@ struct CharacterGalleryView: View {
                     .padding(.top)
 
                 ForEach(characters, id: \.0) { type, emoji, description, color in
-                    CharacterCard(
+                    HelpCharacterCard(
                         name: type.rawValue,
                         emoji: emoji,
                         description: description,
@@ -258,7 +258,7 @@ struct CharacterGalleryView: View {
     }
 }
 
-struct CharacterCard: View {
+private struct HelpCharacterCard: View {
     let name: String
     let emoji: String
     let description: String

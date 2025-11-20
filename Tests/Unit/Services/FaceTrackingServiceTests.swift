@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //
 //  FaceTrackingServiceTests.swift
 //  Aria's Magic SharePlay App - Tests
@@ -897,4 +896,3 @@ class FaceTrackingServiceTests: XCTestCase {
         XCTAssertEqual(mockDelegate.detectedExpressions[1], .eyebrowsRaised)
     }
 }
->>>>>>> origin/claude/qa-engineer-setup-018opoWboXZWozhVCKPoChNQ

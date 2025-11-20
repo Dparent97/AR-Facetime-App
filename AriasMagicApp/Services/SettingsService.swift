@@ -12,6 +12,7 @@ import SwiftUI
 ///
 /// Uses @AppStorage for automatic persistence to UserDefaults
 /// All settings are observable and can be bound directly to SwiftUI views
+@MainActor
 class SettingsService: ObservableObject {
     // MARK: - Onboarding
 
