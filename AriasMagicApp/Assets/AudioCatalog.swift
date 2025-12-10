@@ -8,6 +8,8 @@ public enum AudioCatalog: String, CaseIterable {
     case twirl = "twirl_sfx"
     case appearance = "appearance_sfx"
     case faceTracking = "face_tracking_sfx"
+    case snow = "snow_sfx"
+    case bubbles = "bubbles_sfx"
     
     public var fileName: String {
         return rawValue

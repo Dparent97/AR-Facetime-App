@@ -22,6 +22,7 @@ public class ARSceneController: NSObject, ARSessionDelegate {
     // State tracking
     private var characterEntities: [UUID: ModelEntity] = [:]
     private var characterLastActions: [UUID: CharacterAction] = [:]
+    private var effectEntities: [UUID: Entity] = [:]
     private var selectedCharacterId: UUID?
     
     // Gesture recognizers
@@ -99,8 +100,19 @@ public class ARSceneController: NSObject, ARSessionDelegate {
             updateCharacter(entity: entity, state: state)
         }
         
-        // 4. Update Effects (simplified for Phase 1)
-        // In a full implementation, we'd map EffectState to entities similarly
+        // 4. Update Effects
+        for effect in store.effects {
+            if effectEntities[effect.id] == nil {
+                spawnEffect(effect)
+            }
+        }
+        
+        // Cleanup expired effects
+        for (id, _) in effectEntities {
+            if !store.effects.contains(where: { $0.id == id }) {
+                removeEffect(id: id)
+            }
+        }
     }
     
     private func spawnCharacter(state: CharacterState) {
@@ -123,12 +135,6 @@ public class ARSceneController: NSObject, ARSessionDelegate {
     
     private func updateCharacter(entity: ModelEntity, state: CharacterState) {
         // Position/Scale updates
-        // We should interpolate for smoothness, but RealityKit's move(to:) handles that if we use it.
-        // However, if the update comes from local gesture, we might want to skip visual update 
-        // to avoid lag/loops, or just trust the store is source of truth.
-        // For Phase 1, strict Store -> View sync.
-        
-        // Only update if changed significantly to avoid jitter
         if distance(entity.position, state.position) > 0.01 {
              entity.position = state.position
         }
@@ -151,7 +157,6 @@ public class ARSceneController: NSObject, ARSessionDelegate {
     private func removeCharacter(id: UUID) {
         guard let entity = characterEntities[id] else { return }
         
-        // Cleanup anchor
         if let anchor = entity.parent as? AnchorEntity {
             arView.scene.removeAnchor(anchor)
         } else {
@@ -160,6 +165,31 @@ public class ARSceneController: NSObject, ARSessionDelegate {
         
         characterEntities.removeValue(forKey: id)
         characterLastActions.removeValue(forKey: id)
+    }
+    
+    private func spawnEffect(_ state: EffectState) {
+        let entity = ParticleBuilder.shared.createEffectEntity(for: state.type)
+        
+        // Add to anchor
+        let anchor = AnchorEntity(.world(transform: matrix_identity_float4x4))
+        anchor.position = state.position
+        anchor.addChild(entity)
+        arView.scene.addAnchor(anchor)
+        
+        effectEntities[state.id] = entity
+        
+        // Play sound (mapped in AudioService)
+        AudioService.shared.play(.sparkle) // Default fallback, or map types
+    }
+    
+    private func removeEffect(id: UUID) {
+        guard let entity = effectEntities[id] else { return }
+        if let anchor = entity.parent as? AnchorEntity {
+            arView.scene.removeAnchor(anchor)
+        } else {
+            entity.removeFromParent()
+        }
+        effectEntities.removeValue(forKey: id)
     }
     
     // MARK: - Gestures
@@ -174,11 +204,10 @@ public class ARSceneController: NSObject, ARSessionDelegate {
                 delegate?.sceneDidSelectCharacter(id: id)
                 
                 // Feedback
-                AnimationController.shared.playAnimation(on: entity, action: .jump) // Small feedback
+                AnimationController.shared.playAnimation(on: entity, action: .jump)
             }
         } else {
             // Tap on empty space -> Request spawn
-            // Raycast to find world position
             let results = arView.raycast(from: location, allowing: .estimatedPlane, alignment: .horizontal)
             if let result = results.first {
                 let position = SIMD3<Float>(result.worldTransform.columns.3.x, result.worldTransform.columns.3.y, result.worldTransform.columns.3.z)
@@ -191,14 +220,12 @@ public class ARSceneController: NSObject, ARSessionDelegate {
         guard let id = selectedCharacterId, let entity = characterEntities[id] else { return }
         
         if sender.state == .changed {
-            // Simple screen-space to world-space drag
-            // This is complex to do perfectly, for now simple translation on ground plane
             let translation = sender.translation(in: arView)
-            let scaleFactor: Float = 0.001 // Sensitivity
+            let scaleFactor: Float = 0.001
             
             var newPos = entity.position
             newPos.x += Float(translation.x) * scaleFactor
-            newPos.z += Float(translation.y) * scaleFactor // Map screen Y to world Z
+            newPos.z += Float(translation.y) * scaleFactor
             
             delegate?.sceneDidUpdateCharacter(id: id, position: newPos, scale: nil, rotation: nil)
             
@@ -217,4 +244,3 @@ public class ARSceneController: NSObject, ARSessionDelegate {
         }
     }
 }
-

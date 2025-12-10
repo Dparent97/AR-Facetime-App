@@ -92,6 +92,14 @@ public class AudioService: ObservableObject {
         case .sparkle: play(.sparkle)
         }
     }
+    
+    public func playForEffect(_ type: EffectType) {
+        switch type {
+        case .sparkles: play(.sparkle)
+        case .snow: play(.snow)
+        case .bubbles: play(.bubbles)
+        }
+    }
 }
 
 extension AVAudioPCMBuffer {
